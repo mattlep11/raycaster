@@ -1,0 +1,9 @@
+#Ignore IDE Configurations
+/.vs
+
+#User specified configs
+**/*.vcxproj.user
+
+#Ignore Outputs
+/bin
+/bin/intermediates
