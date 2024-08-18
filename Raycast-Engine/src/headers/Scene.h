@@ -6,13 +6,10 @@
 #include "./Shared.h"
 #include "./Map.h"
 
-class Engine
+class Scene
 {
     Map tileGrid{};
 
-public:
-    // starts the application
-    void Run();
     // checks all necessary components for updates
     void PollUpdates();
     // draws the scene details like the borders, fps counter, etc
@@ -21,6 +18,10 @@ public:
     void DrawMapLines() const;
     // draws a field around the cell the mouse is currently in
     void DrawMouseCell() const;
+
+public:
+    // starts the application
+    void Run();
 };
 
 #endif RAYCAST_ENGINE_H

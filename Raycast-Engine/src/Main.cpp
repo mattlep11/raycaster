@@ -1,8 +1,8 @@
-#include "./headers/Engine.h"
+#include "./headers/Scene.h"
 
 int main()
 {
-    Engine driver{};
+    Scene driver{};
     driver.Run();
 
     return 0;

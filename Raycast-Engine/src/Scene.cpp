@@ -1,6 +1,6 @@
-#include "./headers/Engine.h"
+#include "./headers/Scene.h"
 
-void Engine::Run()
+void Scene::Run()
 {
     SetTargetFPS(TARGET_FPS);
     InitWindow(WIN_WIDTH, WIN_HEIGHT, "RAYCASTER ENGINE o7");
@@ -21,18 +21,18 @@ void Engine::Run()
     }
 }
 
-void Engine::PollUpdates()
+void Scene::PollUpdates()
 {
     tileGrid.UpdateMouseCell();
 }
 
-void Engine::DrawSceneDetails() const
+void Scene::DrawSceneDetails() const
 {
     DrawRectangleLinesEx(VIEWPORT, 2, WHITE);
     DrawFPS(MENU_START_X, VIEW_START_Y + 50);
 }
 
-void Engine::DrawMapLines() const
+void Scene::DrawMapLines() const
 {
     // horizontals
     const int endX{ VIEW_START_X + VIEW_WIDTH };
@@ -51,7 +51,7 @@ void Engine::DrawMapLines() const
     }
 }
 
-void Engine::DrawMouseCell() const
+void Scene::DrawMouseCell() const
 {
     int mx{ tileGrid.GetMouseCell().GetX() };
     int my{ tileGrid.GetMouseCell().GetY() };
