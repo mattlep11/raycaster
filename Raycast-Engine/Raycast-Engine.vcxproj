@@ -153,9 +153,12 @@
   <ItemGroup>
     <ClCompile Include="src\Engine.cpp" />
     <ClCompile Include="src\Main.cpp" />
+    <ClCompile Include="src\Map.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\headers\Coordinate.h" />
     <ClInclude Include="src\headers\Engine.h" />
+    <ClInclude Include="src\headers\Map.h" />
     <ClInclude Include="src\headers\Shared.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
