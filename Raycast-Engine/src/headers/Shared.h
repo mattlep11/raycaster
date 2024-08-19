@@ -9,15 +9,24 @@
 #define INFOLOG(m) std::cout << "[INFOLOG]: " << m << '\n'
 #define ERRLOG(e) std::cerr << "[ERR]: " << e << '\n'
 
-// window config
+/*
+* NOTE: Changing the specifications will alter how the whole app looks as most of the calculations are done using these
+* constants. Everything (in theory) branches off from the windows specs and the viewport's starting X value. Modifying
+* anything else may result in skewing.
+*
+* For the map configuration, the cell-width must be chosen based on the desired number of cells that can fit equally
+* within the grid's area. With the default specifications, 25 or 50 work best.
+*/
+
+// window specs
 constexpr int TARGET_FPS{ 75 };
 constexpr int WIN_HEIGHT{ 800 };
 constexpr int WIN_WIDTH{ 1200 };
 
-// scene config
+// scene specs
 constexpr int VIEW_START_X{ 25 };
 constexpr int VIEW_START_Y{ VIEW_START_X };
-constexpr int VIEW_WIDTH{ static_cast<int>(WIN_WIDTH * 0.75) - 2 * VIEW_START_X };
+constexpr int VIEW_WIDTH{ (int)(WIN_WIDTH * 0.75) - 2 * VIEW_START_X };
 constexpr int VIEW_HEIGHT{ WIN_HEIGHT - 2 * VIEW_START_Y };
 constexpr int VIEW_END_X{ VIEW_WIDTH + VIEW_START_X };
 constexpr int VIEW_END_Y{ VIEW_HEIGHT + VIEW_START_Y };
