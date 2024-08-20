@@ -1,12 +1,12 @@
 #pragma once
 
-#ifndef RAYCAST_MAP_H
-#define RAYCAST_MAP_H
+#ifndef RAYCAST_GRID_H
+#define RAYCAST_GRID_H
 
 #include "./Shared.h"
 #include "./Coordinate.h"
 
-class Map
+class Grid
 {
     Coordinate mouseCell{};
 

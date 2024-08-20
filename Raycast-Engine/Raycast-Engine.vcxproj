@@ -151,14 +151,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="src\Engine.cpp" />
+    <ClCompile Include="src\Controller.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Main.cpp" />
-    <ClCompile Include="src\Map.cpp" />
+    <ClCompile Include="src\Grid.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\headers\Controller.h" />
     <ClInclude Include="src\headers\Coordinate.h" />
-    <ClInclude Include="src\headers\Engine.h" />
-    <ClInclude Include="src\headers\Map.h" />
+    <ClInclude Include="src\headers\Scene.h" />
+    <ClInclude Include="src\headers\Grid.h" />
     <ClInclude Include="src\headers\Shared.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

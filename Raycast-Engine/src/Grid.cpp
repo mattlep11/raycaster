@@ -1,6 +1,6 @@
-#include "./headers/Map.h"
+#include "./headers/Grid.h"
 
-void Map::UpdateMouseCell()
+void Grid::UpdateMouseCell()
 {
     int mx{ GetMouseX() };
     int my{ GetMouseY() };

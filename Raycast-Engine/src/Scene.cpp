@@ -28,7 +28,7 @@ void Scene::Run()
 
         ClearBackground(BLACK);
 
-        DrawMapLines();
+        DrawGridLines();
         DrawMouseCell();
         DrawSceneDetails();
 
@@ -39,8 +39,8 @@ void Scene::Run()
 void Scene::PollUpdates()
 {
     tileGrid.UpdateMouseCell();
-    PollForClicks();
-    PollForKeyEvents();
+    app.PollForClicks();
+    app.PollForKeyEvents();
 }
 
 void Scene::DrawSceneDetails() const
@@ -98,7 +98,7 @@ void Scene::DrawTileSelector() const
     );
 }
 
-void Scene::DrawMapLines() const
+void Scene::DrawGridLines() const
 {
     // horizontals
     const int endX{ VIEW_START_X + VIEW_WIDTH };

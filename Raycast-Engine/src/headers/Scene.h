@@ -1,14 +1,15 @@
 #pragma once
 
-#ifndef RAYCAST_ENGINE_H
-#define RAYCAST_ENGINE_H
+#ifndef RAYCAST_SCENE_H
+#define RAYCAST_SCENE_H
 
 #include "./Shared.h"
 #include "./Controller.h"
 
 class Scene
 {
-    Map tileGrid{};
+    Controller app{};
+    Grid tileGrid{};
 
     // checks all necessary components for updates
     void PollUpdates();
@@ -19,7 +20,7 @@ class Scene
     // draws the tile selector display to the screen
     void DrawTileSelector() const;
     // draws the grid lines onto the map viewport
-    void DrawMapLines() const;
+    void DrawGridLines() const;
 
     // draws a field around the cell the mouse is currently in
     void DrawMouseCell() const;
