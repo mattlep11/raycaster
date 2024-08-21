@@ -72,12 +72,10 @@ void Scene::DrawSwapButton() const
 
 void Scene::DrawTileSelector() const
 {
-    Color rectColour{ DARKBLUE };
+    Color rectColour{ app.GetColour(app.GetSelectedTile()) };
     const Vector2 qLeftSize{ MeasureTextEx(GetFontDefault(), "< Q", 30, 1.0f) };
     const Vector2 eRightSize{ MeasureTextEx(GetFontDefault(), "E >", 30, 1.0f) };
     const int headerSize{ MeasureText("Selected Tile:", 30) };
-    if (true) // TODO: switch this to a switch and go thru the enum of available tiles
-        rectColour = rectColour;
 
     DrawRectangleRoundedLines(
         { SELECTOR_START_X, SELECTOR_START_Y, SELECTOR_EDGE, SELECTOR_EDGE },
@@ -122,10 +120,10 @@ void Scene::DrawGridLines() const
 void Scene::DrawGridTiles() const
 {
     for (int i{}; i < NB_CHUNKS; i++)
-        for (const Coordinate& tile : tileGrid.GetChunks()[i])
+        for (const Tile& tile : tileGrid.GetChunks()[i])
             DrawRectangle(
                 VIEW_START_X + tile.GetX() * CELL_WIDTH, VIEW_START_Y + tile.GetY() * CELL_WIDTH,
-                CELL_WIDTH, CELL_WIDTH, BLUE
+                CELL_WIDTH - 1, CELL_WIDTH - 1, app.GetColour(tile.GetType())
             );
 }
 

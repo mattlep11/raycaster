@@ -35,26 +35,26 @@ void Grid::UpdateMouseCell()
     }
 }
 
-void Grid::PlaceTile()
+void Grid::PlaceTile(TileType type)
 {
     size_t chunk{ CellToChunk(mouseCell) };
 
-    for (const Coordinate& tile : chunks[chunk])
+    for (const Tile& tile : chunks[chunk])
         if (mouseCell == tile)
             return;
 
-    chunks[chunk].push_back({ mouseCell }); // append a copy of the tile to the chunk's list
+    chunks[chunk].push_back({ mouseCell, type }); // append a copy of the tile to the chunk's list
     INFOLOG("New tile built at: C" << chunk << "[" << mouseCell.GetX() << ", " << mouseCell.GetY() << "]");
 }
 
 void Grid::RemoveTile()
 {
     size_t chunk{ CellToChunk(mouseCell) };
-    for (const Coordinate& tile : chunks[chunk])
+    for (const Tile& tile : chunks[chunk])
         if (mouseCell == tile)
         {
             // swap the tile to delete to the back of the vector to pop it
-            std::vector<Coordinate>& tileList{ chunks[chunk] };
+            std::vector<Tile>& tileList{ chunks[chunk] };
             auto iter{ std::find(tileList.begin(), tileList.end(), tile) };
             std::iter_swap(iter, tileList.end() - 1);
             tileList.pop_back();
@@ -64,7 +64,7 @@ void Grid::RemoveTile()
         }
 };
 
-size_t Grid::CellToChunk(const Coordinate& coord) const
+size_t Grid::CellToChunk(const Tile& coord) const
 {
     return coord.GetX() / chunkWidth + coord.GetY() / chunkHeight * chunksPerRow;
 }

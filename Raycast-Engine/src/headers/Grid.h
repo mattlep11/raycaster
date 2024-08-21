@@ -4,12 +4,12 @@
 #define RAYCAST_GRID_H
 
 #include "./Shared.h"
-#include "./Coordinate.h"
+#include "./Tile.h"
 
 class Grid
 {
-    Coordinate mouseCell{};
-    std::vector<Coordinate> chunks[NB_CHUNKS]{};
+    Tile mouseCell{};
+    std::vector<Tile> chunks[NB_CHUNKS]{};
     size_t chunkWidth{};
     size_t chunkHeight{};
     size_t chunksPerRow{};
@@ -22,14 +22,14 @@ public:
     // updates which cell the mouse is currently in
     void UpdateMouseCell();
     // places a tile at the current mouse cell
-    void PlaceTile();
+    void PlaceTile(TileType type);
     // removes a tile from the current mouse cell
     void RemoveTile();
     // converts a coordinate into the corresponding integer chunk index
-    size_t CellToChunk(const Coordinate& coord) const;
+    size_t CellToChunk(const Tile& coord) const;
 
-    const Coordinate GetMouseCell() const { return this->mouseCell; }
-    const std::vector<Coordinate>* GetChunks() const { return this->chunks; }
+    const Tile GetMouseCell() const { return this->mouseCell; }
+    const std::vector<Tile>* GetChunks() const { return this->chunks; }
 };
 
 #endif

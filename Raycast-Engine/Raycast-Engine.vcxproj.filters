@@ -38,7 +38,7 @@
     <ClInclude Include="src\headers\Grid.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="src\headers\Coordinate.h">
+    <ClInclude Include="src\headers\Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="src\headers\Controller.h">

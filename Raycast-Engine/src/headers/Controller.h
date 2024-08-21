@@ -8,6 +8,9 @@
 
 class Controller
 {
+    // array of possible colours mapped 1:1 with the TileType enum in Tile.h
+    const Color colours[static_cast<int>(TileType::COUNT)]{ DARKBLUE, DARKGREEN, DARKPURPLE };
+    TileType selectedTile{ TileType::DEFAULTB };
 
 public:
     Controller() = default;
@@ -17,6 +20,9 @@ public:
     void PollForClicks(Grid& tileGrid);
     // listens for key presses and delegates the key event to the relevant component
     void PollForKeyEvents();
+
+    Color GetColour(TileType type) const { return this->colours[static_cast<int>(type)]; }
+    TileType GetSelectedTile() const { return this->selectedTile; }
 };
 
 #endif

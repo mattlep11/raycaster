@@ -158,7 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\headers\Controller.h" />
-    <ClInclude Include="src\headers\Coordinate.h" />
+    <ClInclude Include="src\headers\Tile.h" />
     <ClInclude Include="src\headers\Scene.h" />
     <ClInclude Include="src\headers\Grid.h" />
     <ClInclude Include="src\headers\Shared.h" />
