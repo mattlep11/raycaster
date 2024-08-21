@@ -29,6 +29,7 @@ void Scene::Run()
         ClearBackground(BLACK);
 
         DrawGridLines();
+        DrawGridTiles();
         DrawMouseCell();
         DrawSceneDetails();
 
@@ -39,7 +40,7 @@ void Scene::Run()
 void Scene::PollUpdates()
 {
     tileGrid.UpdateMouseCell();
-    app.PollForClicks();
+    app.PollForClicks(tileGrid);
     app.PollForKeyEvents();
 }
 
@@ -84,7 +85,7 @@ void Scene::DrawTileSelector() const
     );
     DrawRectangle(
         SELECTOR_START_X + SELECTOR_EDGE / 4, SELECTOR_START_Y + SELECTOR_EDGE / 4,
-        CELL_WIDTH, CELL_WIDTH,
+        50, 50,
         rectColour
     );
     DrawText("Selected Tile:", SELECTOR_START_X + (SELECTOR_EDGE - headerSize) / 2, SELECTOR_START_Y - 50, 30, WHITE);
@@ -100,6 +101,7 @@ void Scene::DrawTileSelector() const
 
 void Scene::DrawGridLines() const
 {
+    // vertical and horizontal is done separately to premit non-square grid sizes (may cause chunk issues though TvT)
     // horizontals
     const int endX{ VIEW_START_X + VIEW_WIDTH };
     for (int i{ 1 }; i < NB_ROWS; i++)
@@ -115,6 +117,16 @@ void Scene::DrawGridLines() const
         int vertical{ VIEW_START_X + i * CELL_WIDTH };
         DrawLine(vertical, VIEW_START_Y, vertical, endY, DARKGRAY);
     }
+}
+
+void Scene::DrawGridTiles() const
+{
+    for (int i{}; i < NB_CHUNKS; i++)
+        for (const Coordinate& tile : tileGrid.GetChunks()[i])
+            DrawRectangle(
+                VIEW_START_X + tile.GetX() * CELL_WIDTH, VIEW_START_Y + tile.GetY() * CELL_WIDTH,
+                CELL_WIDTH, CELL_WIDTH, BLUE
+            );
 }
 
 void Scene::DrawMouseCell() const

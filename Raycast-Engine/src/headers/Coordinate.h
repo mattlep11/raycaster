@@ -14,12 +14,16 @@ private:
 public:
     Coordinate() = default;
     Coordinate(int x, int y) : x(x), y(y) {}
+    Coordinate(const Coordinate& other) : x(other.x), y(other.y) {}
     ~Coordinate() = default;
 
     int GetX() const { return this->x; }
     int GetY() const { return this->y; }
     void SetX(int newX) { this->x = newX; }
     void SetY(int newY) { this->y = newY; }
+
+    bool operator==(const Coordinate& other) const { return this->x == other.x && this->y == other.y; }
+    bool operator!=(const Coordinate& other) const { return this->x != other.x || this->y != other.y; }
 };
 
 #endif

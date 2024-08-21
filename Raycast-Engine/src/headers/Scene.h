@@ -21,11 +21,16 @@ class Scene
     void DrawTileSelector() const;
     // draws the grid lines onto the map viewport
     void DrawGridLines() const;
+    // draws the grid tiles onto the map viewport
+    void DrawGridTiles() const;
 
     // draws a field around the cell the mouse is currently in
     void DrawMouseCell() const;
 
 public:
+    Scene() = default;
+    ~Scene() = default;
+
     // starts the application
     void Run();
 };

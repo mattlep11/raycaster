@@ -1,4 +1,22 @@
+#include <algorithm>
 #include "./headers/Grid.h"
+
+Grid::Grid()
+{
+    int totalCells{ NB_COLS * NB_ROWS };
+    int cellsPerChunk{ totalCells / NB_CHUNKS };
+
+    chunkWidth = (size_t)sqrt(cellsPerChunk);
+    chunkHeight = (size_t)sqrt(cellsPerChunk);
+
+    while (chunkWidth * chunkHeight * NB_CHUNKS < totalCells)
+    {
+        chunkWidth++;
+        chunkHeight++;
+    }
+
+    chunksPerRow = NB_COLS / chunkWidth;
+}
 
 void Grid::UpdateMouseCell()
 {
@@ -15,4 +33,38 @@ void Grid::UpdateMouseCell()
         mouseCell.SetX((mx - VIEW_START_X) / CELL_WIDTH);
         mouseCell.SetY((my - VIEW_START_Y) / CELL_WIDTH);
     }
+}
+
+void Grid::PlaceTile()
+{
+    size_t chunk{ CellToChunk(mouseCell) };
+
+    for (const Coordinate& tile : chunks[chunk])
+        if (mouseCell == tile)
+            return;
+
+    chunks[chunk].push_back({ mouseCell }); // append a copy of the tile to the chunk's list
+    INFOLOG("New tile built at: C" << chunk << "[" << mouseCell.GetX() << ", " << mouseCell.GetY() << "]");
+}
+
+void Grid::RemoveTile()
+{
+    size_t chunk{ CellToChunk(mouseCell) };
+    for (const Coordinate& tile : chunks[chunk])
+        if (mouseCell == tile)
+        {
+            // swap the tile to delete to the back of the vector to pop it
+            std::vector<Coordinate>& tileList{ chunks[chunk] };
+            auto iter{ std::find(tileList.begin(), tileList.end(), tile) };
+            std::iter_swap(iter, tileList.end() - 1);
+            tileList.pop_back();
+
+            INFOLOG("Destroyed tile at: C" << chunk << "[" << mouseCell.GetX() << ", " << mouseCell.GetY() << "]");
+            break;
+        }
+};
+
+size_t Grid::CellToChunk(const Coordinate& coord) const
+{
+    return coord.GetX() / chunkWidth + coord.GetY() / chunkHeight * chunksPerRow;
 }
