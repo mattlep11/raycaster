@@ -10,6 +10,7 @@ class Scene
 {
     Controller app{};
     Grid tileGrid{};
+    Player player{};
 
     // checks all necessary components for updates
     void PollUpdates();
@@ -23,7 +24,8 @@ class Scene
     void DrawGridLines() const;
     // draws the grid tiles onto the map viewport
     void DrawGridTiles() const;
-
+    // draws the 2D player onto the map viewport
+    void DrawPlayer() const;
     // draws a field around the cell the mouse is currently in
     void DrawMouseCell() const;
 

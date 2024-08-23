@@ -6,6 +6,7 @@
 #include <iostream>
 #include <vector>
 #include "./raylib.h"
+#include "./Geometry.h"
 
 #define INFOLOG(m) std::cout << "[INFOLOG]: " << m << '\n'
 #define ERRLOG(e) std::cerr << "[ERR]: " << e << '\n'
@@ -38,9 +39,14 @@ constexpr int MENU_START_X{ VIEW_START_X * 2 + VIEW_WIDTH };
 
 // map config
 constexpr int CELL_WIDTH{ 34 };
+constexpr int CELL_WIDTH_IN_GRID{ CELL_WIDTH - 1 };
 constexpr int NB_ROWS{ VIEW_HEIGHT / CELL_WIDTH };
 constexpr int NB_COLS{ VIEW_WIDTH / CELL_WIDTH };
 constexpr int NB_CHUNKS{ 25 };
+
+// player config
+constexpr float PLR_SPEED{ 3.5f };
+constexpr float PLR_R_SPEED{ 0.1f };
 
 // helper functions
 template <typename T>

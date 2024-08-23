@@ -31,6 +31,7 @@ void Scene::Run()
         DrawGridLines();
         DrawGridTiles();
         DrawMouseCell();
+        DrawPlayer();
         DrawSceneDetails();
 
         EndDrawing();
@@ -41,7 +42,7 @@ void Scene::PollUpdates()
 {
     tileGrid.UpdateMouseCell();
     app.PollForClicks(tileGrid);
-    app.PollForKeyEvents();
+    app.PollForKeyEvents(player);
 }
 
 void Scene::DrawSceneDetails() const
@@ -123,8 +124,14 @@ void Scene::DrawGridTiles() const
         for (const Tile& tile : tileGrid.GetChunks()[i])
             DrawRectangle(
                 VIEW_START_X + tile.GetX() * CELL_WIDTH, VIEW_START_Y + tile.GetY() * CELL_WIDTH,
-                CELL_WIDTH - 1, CELL_WIDTH - 1, app.GetColour(tile.GetType())
+                CELL_WIDTH_IN_GRID, CELL_WIDTH_IN_GRID, app.GetColour(tile.GetType())
             );
+}
+
+void Scene::DrawPlayer() const
+{
+    const Vector2D plrPos{ player.GetPos() };
+    DrawCircleV({ plrPos.GetX(), plrPos.GetY() }, player.GetRadius(), GREEN);
 }
 
 void Scene::DrawMouseCell() const

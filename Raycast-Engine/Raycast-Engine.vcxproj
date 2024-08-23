@@ -152,16 +152,22 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Controller.cpp" />
+    <ClCompile Include="src\Geometry.cpp" />
+    <ClCompile Include="src\Player.cpp" />
     <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Main.cpp" />
     <ClCompile Include="src\Grid.cpp" />
+    <ClCompile Include="src\Vector2D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\headers\Controller.h" />
+    <ClInclude Include="src\headers\Geometry.h" />
+    <ClInclude Include="src\headers\Player.h" />
     <ClInclude Include="src\headers\Tile.h" />
     <ClInclude Include="src\headers\Scene.h" />
     <ClInclude Include="src\headers\Grid.h" />
     <ClInclude Include="src\headers\Shared.h" />
+    <ClInclude Include="src\headers\Vector2D.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
