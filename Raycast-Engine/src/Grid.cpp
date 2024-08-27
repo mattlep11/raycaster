@@ -41,9 +41,13 @@ void Grid::PlaceTile(TileType type)
 {
     size_t chunk{ CellToChunk(mouseCell) };
 
-    for (const Tile& tile : chunks[chunk])
+    for (Tile& tile : chunks[chunk])
         if (mouseCell == tile)
+        {
+            if (tile.GetType() != type) // allows swapping tile types
+                tile.SetTileType(type);
             return;
+        }
 
     if (!CircToSquareIsColliding(player.GetPos(), player.GetRadius(), mouseCell.ToVector(), CELL_WIDTH))
     {
