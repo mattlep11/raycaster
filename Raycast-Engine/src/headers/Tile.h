@@ -9,7 +9,7 @@
 enum class TileType {
     DEFAULTB,
     DEFAULTG,
-    DEFAULTY,
+    DEFAULTP,
     COUNT = 3
 };
 
@@ -26,6 +26,12 @@ public:
     Tile(int x, int y) : x(x), y(y) {}
     Tile(const Tile& other, TileType type) : x(other.x), y(other.y), type(type) {}
     ~Tile() = default;
+
+    // converts the tile's x and y coordinates into proper screen dimensions
+    Vector2D ToVector() const
+    {
+        return { static_cast<float>(x) * CELL_WIDTH + VIEW_START_X, static_cast<float>(y) * CELL_WIDTH + VIEW_START_Y };
+    }
 
     int GetX() const { return this->x; }
     int GetY() const { return this->y; }

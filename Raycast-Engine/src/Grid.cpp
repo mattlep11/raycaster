@@ -1,7 +1,9 @@
 #include <algorithm>
 #include "./headers/Grid.h"
 
-Grid::Grid()
+Grid::Grid(Player& player)
+    :
+    player(player)
 {
     int totalCells{ NB_COLS * NB_ROWS };
     int cellsPerChunk{ totalCells / NB_CHUNKS };
@@ -43,8 +45,11 @@ void Grid::PlaceTile(TileType type)
         if (mouseCell == tile)
             return;
 
-    chunks[chunk].push_back({ mouseCell, type }); // append a copy of the tile to the chunk's list
-    INFOLOG("New tile built at: C" << chunk << "[" << mouseCell.GetX() << ", " << mouseCell.GetY() << "]");
+    if (!CircToSquareIsColliding(player.GetPos(), player.GetRadius(), mouseCell.ToVector(), CELL_WIDTH))
+    {
+        chunks[chunk].push_back({ mouseCell, type }); // append a copy of the tile to the chunk's list
+        INFOLOG("New tile built at: C" << chunk << "[" << mouseCell.GetX() << ", " << mouseCell.GetY() << "]");
+    }
 }
 
 void Grid::RemoveTile()
@@ -67,4 +72,10 @@ void Grid::RemoveTile()
 size_t Grid::CellToChunk(const Tile& coord) const
 {
     return coord.GetX() / chunkWidth + coord.GetY() / chunkHeight * chunksPerRow;
+}
+
+size_t Grid::VectorToChunk(const Vector2D& vec) const
+{
+    return static_cast<int>((vec.GetX() - VIEW_START_X) / CELL_WIDTH) / chunkWidth
+        + static_cast<int>((vec.GetY() - VIEW_START_Y) / CELL_WIDTH) / chunkHeight * chunksPerRow;
 }

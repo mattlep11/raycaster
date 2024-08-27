@@ -1,6 +1,6 @@
 #include "./headers/Controller.h"
 
-void Controller::PollForClicks(Grid& tileGrid) const
+void Controller::HandleClickEvents(Grid& tileGrid) const
 {
     int mx{ GetMouseX() };
     int my{ GetMouseY() };
@@ -20,7 +20,7 @@ void Controller::PollForClicks(Grid& tileGrid) const
     }
 }
 
-void Controller::PollForKeyEvents(Player& player)
+void Controller::HandleKeyEvents(const Grid& tileGrid, Player& player)
 {
     // cycle through the tile types in forward/reverse direction
     if (IsKeyPressed(KEY_E))
@@ -45,5 +45,5 @@ void Controller::PollForKeyEvents(Player& player)
     if (IsKeyDown(KEY_LEFT))
         av -= PLR_R_SPEED;
 
-    player.Update(vx, vy, av);
+    player.Update(tileGrid, vx, vy, av);
 }

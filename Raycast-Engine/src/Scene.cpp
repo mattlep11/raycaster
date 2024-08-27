@@ -31,7 +31,7 @@ void Scene::Run()
         DrawGridLines();
         DrawGridTiles();
         DrawMouseCell();
-        DrawPlayer();
+        DrawPlayer(tileGrid.GetPlayer());
         DrawSceneDetails();
 
         EndDrawing();
@@ -41,8 +41,8 @@ void Scene::Run()
 void Scene::PollUpdates()
 {
     tileGrid.UpdateMouseCell();
-    app.PollForClicks(tileGrid);
-    app.PollForKeyEvents(player);
+    app.HandleClickEvents(tileGrid);
+    app.HandleKeyEvents(tileGrid, tileGrid.GetPlayer());
 }
 
 void Scene::DrawSceneDetails() const
@@ -128,7 +128,7 @@ void Scene::DrawGridTiles() const
             );
 }
 
-void Scene::DrawPlayer() const
+void Scene::DrawPlayer(const Player& player) const
 {
     const Vector2D plrPos{ player.GetPos() };
     DrawCircleV({ plrPos.GetX(), plrPos.GetY() }, player.GetRadius(), GREEN);
