@@ -60,6 +60,9 @@ void Scene::DrawSceneDetails() const
     const int fpsSize{ MeasureText("XX FPS", 10) };
     DrawFPS(MENU_START_X + MENU_WIDTH - fpsSize - VIEW_START_X, VIEW_START_Y);
 
+    DrawText("Controls: WASD to move | L/R arrow keys to rotate | Q/E to cycle tile types | M1/M2 to place or remove tiles | Z to toggle view markers | SWAP button for 3D POV",
+        VIEW_START_X, VIEW_START_Y / 2, 10, LIGHTGRAY);
+
     DrawRectangleLinesEx(VIEWPORT, 2, WHITE);
     DrawSwapButton();
     DrawTileSelector();
