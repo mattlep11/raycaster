@@ -1,11 +1,38 @@
 #include <set>
 #include "./headers/Player.h"
 
+Player::Player()
+{
+    // create all ray objects with null values
+    for (size_t i{}; i < NB_RAYS; i++)
+        rays[i] = { {0.0f, 0.0f}, {0.0f, 0.0f} };
+}
+
 void Player::Update(const Grid& grid, float vx, float vy, float av)
 {
     UpdatePosition(vx, vy);
     UpdateRotation(av);
+    UpdateRayOrientations();
+    CheckCollisionStatus(grid);
+}
 
+void Player::UpdateRotation(float av)
+{
+    dir = ApplyRotationMatrix(dir, av).ToNormalized();
+
+    // rotate the view point's frame of reference.
+    viewPointL.SetX(pos.GetX() - viewLength * 0.5f * dir.GetX());
+    viewPointL.SetY(pos.GetY() - viewLength * 0.5f * dir.GetY());
+}
+
+void Player::UpdatePosition(float vx, float vy)
+{
+    pos.SetX(clamp<float>(pos.GetX() + vx, VIEW_START_X + radius, VIEW_END_X - radius));
+    pos.SetY(clamp<float>(pos.GetY() + vy, VIEW_START_Y + radius, VIEW_END_Y - radius));
+}
+
+void Player::CheckCollisionStatus(const Grid& grid)
+{
     // check collision with all tiles in chunks that the player may be in (+ - radius)
     float x{ pos.GetX() };
     float y{ pos.GetY() };
@@ -47,17 +74,6 @@ void Player::Update(const Grid& grid, float vx, float vy, float av)
     }
 }
 
-void Player::UpdateRotation(float av)
-{
-    dir = ApplyRotationMatrix(dir, av).ToNormalized();
-}
-
-void Player::UpdatePosition(float vx, float vy)
-{
-    pos.SetX(clamp<float>(pos.GetX() + vx, VIEW_START_X + radius, VIEW_END_X - radius));
-    pos.SetY(clamp<float>(pos.GetY() + vy, VIEW_START_Y + radius, VIEW_END_Y - radius));
-}
-
 void Player::ResolveCollision(const Vector2D& wall)
 {
     Vector2D closest{ CircToSquareClosestPoint(pos, wall, CELL_WIDTH) };
@@ -71,4 +87,19 @@ void Player::ResolveCollision(const Vector2D& wall)
 
     pos.SetX(pos.GetX() + overlap * dx);
     pos.SetY(pos.GetY() + overlap * dy);
+}
+
+void Player::UpdateRayOrientations()
+{
+    float da{ fov / (NB_RAYS - 1) };
+    Vector2D start{ viewPointL - pos };
+    for (size_t i{}; i < NB_RAYS; i++)
+    {
+        Vector2D rayDir{ ApplyRotationMatrix(start, i * da).ToNormalized() };
+        rays[i].SetDir(rayDir);
+
+        // summing 100.0f as a flat rate as a temporary placeholder before the DDA calculated the full length
+        // TODO: remove 100.0f increment after DDA has been implemented
+        rays[i].SetEndPos({ pos.GetX() + 100.0f * rayDir.GetX(), pos.GetY() + 100.0f * rayDir.GetY() });
+    }
 }

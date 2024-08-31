@@ -26,6 +26,8 @@ class Scene
     void DrawGridTiles() const;
     // draws the 2D player onto the map viewport
     void DrawPlayer(const Player& player) const;
+    // draws the player's rays
+    void DrawPlayerViewRays(const Player& player) const;
     // draws a field around the cell the mouse is currently in
     void DrawMouseCell() const;
 

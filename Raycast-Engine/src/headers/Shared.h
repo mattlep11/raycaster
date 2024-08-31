@@ -47,6 +47,10 @@ constexpr int NB_CHUNKS{ 25 };
 // player config
 constexpr float PLR_SPEED{ 3.5f };
 constexpr float PLR_R_SPEED{ 0.1f };
+constexpr size_t NB_RAYS{ 20 };
+constexpr float DIR_VEC_LENGTH{ 50.0f };
+constexpr float VIEW_VEC_LENGTH{ DIR_VEC_LENGTH };
+
 
 // helper functions
 template <typename T>

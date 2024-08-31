@@ -132,6 +132,16 @@ void Scene::DrawPlayer(const Player& player) const
 {
     const Vector2D plrPos{ player.GetPos() };
     DrawCircleV({ plrPos.GetX(), plrPos.GetY() }, player.GetRadius(), GREEN);
+
+    DrawPlayerViewRays(player);
+}
+
+void Scene::DrawPlayerViewRays(const Player& player) const
+{
+    Vector2 start{ player.GetPos().GetX(), player.GetPos().GetY() }; // raylib compatible vector
+    const Ray2D* rays{ player.GetRays() };
+    for (size_t i{}; i < NB_RAYS; i++)
+        DrawLineEx(start, { rays[i].GetEndPos().GetX(), rays[i].GetEndPos().GetY() }, 2.0f, RED);
 }
 
 void Scene::DrawMouseCell() const
