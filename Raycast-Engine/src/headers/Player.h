@@ -21,6 +21,8 @@ class Player
     float fov{ atanf(dirLength / viewLength) * 2.0f };
 
     Vector2D viewPointL{ pos - Vector2D(viewLength * 0.5f, 0.0f) }; // the left-most point of the view plane
+    Vector2D viewPointR{ pos + Vector2D(viewLength * 0.5f, 0.0f) }; // the right-most point of the view plane
+    Vector2D dirPoint{ pos - Vector2D(0.0f, dirLength) }; // middle-most point of the view plane, end of direction vec.
 
     // updates the position of the player based on current user inputs
     void UpdatePosition(float vx, float vy);
@@ -41,6 +43,10 @@ public:
 
     const Vector2D GetPos() const { return this->pos; }
     const Vector2D GetDir() const { return this->dir; }
+    const float GetDirLength() const { return this->dirLength; }
+    const Vector2D GetViewPointL() const { return this->viewPointL; }
+    const Vector2D GetViewPointR() const { return this->viewPointR; }
+    const Vector2D GetDirPoint() const { return this->dirPoint; }
     const Ray2D* GetRays() const { return this->rays; }
     float GetRadius() const { return this->radius; }
 };

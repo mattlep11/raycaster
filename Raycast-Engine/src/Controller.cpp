@@ -28,6 +28,10 @@ void Controller::HandleKeyEvents(const Grid& tileGrid, Player& player)
     else if (IsKeyPressed(KEY_Q))
         selectedTile = static_cast<TileType>((static_cast<int>(selectedTile) - 1 + static_cast<int>(TileType::COUNT)) % static_cast<int>(TileType::COUNT));
 
+    // key modifiable states
+    if (IsKeyPressed(KEY_GRAVE))
+        renderViewMarkers = !renderViewMarkers;
+
     // comptuting final velocities per update to update the player with
     float vx{};
     float vy{};

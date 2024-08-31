@@ -12,6 +12,9 @@ class Controller
     const Color colours[static_cast<int>(TileType::COUNT)]{ DARKBLUE, DARKGREEN, DARKPURPLE };
     TileType selectedTile{ TileType::DEFAULTB };
 
+    // states
+    bool renderViewMarkers{ false };
+
 public:
     Controller() = default;
     ~Controller() = default;
@@ -23,6 +26,8 @@ public:
 
     Color GetColour(TileType type) const { return this->colours[static_cast<int>(type)]; }
     TileType GetSelectedTile() const { return this->selectedTile; }
+
+    bool ShouldRenderViewMarkers() const { return this->renderViewMarkers; }
 };
 
 #endif

@@ -23,6 +23,19 @@ void Player::UpdateRotation(float av)
     // rotate the view point's frame of reference.
     viewPointL.SetX(pos.GetX() - viewLength * 0.5f * dir.GetX());
     viewPointL.SetY(pos.GetY() - viewLength * 0.5f * dir.GetY());
+
+    dirPoint.SetX(pos.GetX() + dirLength * dir.GetX());
+    dirPoint.SetY(pos.GetY() + dirLength * dir.GetY());
+
+    // rotate the direction vector by 90 degrees to get the perpindicular camera plane
+    Vector2D planeDir{ dir.ToPerpindicular() };
+    float dx{ viewLength * planeDir.GetX() };
+    float dy{ viewLength * planeDir.GetY() };
+    float dirX{ dirPoint.GetX() };
+    float dirY{ dirPoint.GetY() };
+
+    viewPointL = { dirX + dx, dirY + dy };
+    viewPointR = { dirX - dx, dirY - dy };
 }
 
 void Player::UpdatePosition(float vx, float vy)
@@ -92,7 +105,7 @@ void Player::ResolveCollision(const Vector2D& wall)
 void Player::UpdateRayOrientations()
 {
     float da{ fov / (NB_RAYS - 1) };
-    Vector2D start{ viewPointL - pos };
+    Vector2D start{ viewPointR - pos };
     for (size_t i{}; i < NB_RAYS; i++)
     {
         Vector2D rayDir{ ApplyRotationMatrix(start, i * da).ToNormalized() };

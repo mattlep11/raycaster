@@ -1,5 +1,11 @@
 #include "./headers/Scene.h"
 
+// helper function to make quick convertions into raylib vectors for drawing functions
+static Vector2 AsRaylibVector(const Vector2D& v)
+{
+    return { v.GetX(), v.GetY() };
+}
+
 // constants for rendering the scene elements:
 constexpr int MENU_WIDTH{ WIN_WIDTH - 3 * VIEW_START_X - VIEW_WIDTH };
 constexpr int MENU_HEIGHT{ VIEW_HEIGHT };
@@ -32,6 +38,10 @@ void Scene::Run()
         DrawGridTiles();
         DrawMouseCell();
         DrawPlayer(tileGrid.GetPlayer());
+
+        if (app.ShouldRenderViewMarkers())
+            DrawPlayerViewMarkers(tileGrid.GetPlayer());
+
         DrawSceneDetails();
 
         EndDrawing();
@@ -130,18 +140,30 @@ void Scene::DrawGridTiles() const
 
 void Scene::DrawPlayer(const Player& player) const
 {
-    const Vector2D plrPos{ player.GetPos() };
-    DrawCircleV({ plrPos.GetX(), plrPos.GetY() }, player.GetRadius(), GREEN);
-
+    DrawCircleV(AsRaylibVector(player.GetPos()), player.GetRadius(), GREEN);
     DrawPlayerViewRays(player);
+}
+
+void Scene::DrawPlayerViewMarkers(const Player& player) const
+{
+    Vector2 dirPoint{ AsRaylibVector(player.GetDirPoint()) };
+    Vector2 plrPos{ AsRaylibVector(player.GetPos()) };
+    DrawCircleV(dirPoint, 6.0f, MAGENTA);
+    DrawLineEx(plrPos, dirPoint, 3.0f, MAGENTA);
+
+    Vector2 viewPointL{ AsRaylibVector(player.GetViewPointL()) };
+    Vector2 viewPointR{ AsRaylibVector(player.GetViewPointR()) };
+    DrawCircleV(viewPointL, 6.0f, ORANGE);
+    DrawCircleV(viewPointR, 6.0f, ORANGE);
+    DrawLineEx(viewPointL, viewPointR, 3.0f, ORANGE);
 }
 
 void Scene::DrawPlayerViewRays(const Player& player) const
 {
-    Vector2 start{ player.GetPos().GetX(), player.GetPos().GetY() }; // raylib compatible vector
+    Vector2 start{ AsRaylibVector(player.GetPos()) };
     const Ray2D* rays{ player.GetRays() };
     for (size_t i{}; i < NB_RAYS; i++)
-        DrawLineEx(start, { rays[i].GetEndPos().GetX(), rays[i].GetEndPos().GetY() }, 2.0f, RED);
+        DrawLineEx(start, AsRaylibVector(rays[i].GetEndPos()), 2.0f, RED);
 }
 
 void Scene::DrawMouseCell() const
