@@ -164,7 +164,7 @@
     <ClInclude Include="src\headers\Geometry.h" />
     <ClInclude Include="src\headers\Player.h" />
     <ClInclude Include="src\headers\Ray2D.h" />
-    <ClInclude Include="src\headers\Tile.h" />
+    <ClInclude Include="src\headers\GridCoord.h" />
     <ClInclude Include="src\headers\Scene.h" />
     <ClInclude Include="src\headers\Grid.h" />
     <ClInclude Include="src\headers\Shared.h" />
