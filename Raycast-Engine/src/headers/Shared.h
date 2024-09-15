@@ -4,7 +4,6 @@
 #define RAYCAST_COMMON_RESOURCES_H
 
 #include <iostream>
-#include <vector>
 #include "./raylib.h"
 #include "./Geometry.h"
 

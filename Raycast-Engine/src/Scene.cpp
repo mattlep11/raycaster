@@ -133,12 +133,13 @@ void Scene::DrawGridLines() const
 
 void Scene::DrawGridTiles() const
 {
-    for (int i{}; i < NB_CHUNKS; i++)
-        for (const Tile& tile : tileGrid.GetChunks()[i])
-            DrawRectangle(
-                VIEW_START_X + tile.GetX() * CELL_WIDTH, VIEW_START_Y + tile.GetY() * CELL_WIDTH,
-                CELL_WIDTH_IN_GRID, CELL_WIDTH_IN_GRID, app.GetColour(tile.GetType())
-            );
+    for (int i{}; i < NB_ROWS; i++)
+        for (int j{}; j < NB_COLS; j++)
+            if (tileGrid.Get(i, j) != -1)
+                DrawRectangle(
+                    VIEW_START_X + i * CELL_WIDTH, VIEW_START_Y + j * CELL_WIDTH,
+                    CELL_WIDTH_IN_GRID, CELL_WIDTH_IN_GRID, app.GetColour(tileGrid.Get(i, j))
+                );
 }
 
 void Scene::DrawPlayer(const Player& player) const
@@ -171,8 +172,8 @@ void Scene::DrawPlayerViewRays(const Player& player) const
 
 void Scene::DrawMouseCell() const
 {
-    int mx{ tileGrid.GetMouseCell().GetX() };
-    int my{ tileGrid.GetMouseCell().GetY() };
+    int mx{ tileGrid.GetMouseCell().GetRow() };
+    int my{ tileGrid.GetMouseCell().GetCol() };
 
     // -1 indicates a mouse position outside the grid
     if (mx == -1 || my == -1)

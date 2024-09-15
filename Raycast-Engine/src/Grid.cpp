@@ -1,23 +1,17 @@
-#include <algorithm>
 #include "./headers/Grid.h"
 
 Grid::Grid(Player& player)
     :
     player(player)
 {
-    int totalCells{ NB_COLS * NB_ROWS };
-    int cellsPerChunk{ totalCells / NB_CHUNKS };
+    for (int i{}; i < NB_ROWS; i++)
+        for (int j{}; j < NB_COLS; j++)
+            grid[i][j] = -1;
+}
 
-    chunkWidth = (size_t)sqrt(cellsPerChunk);
-    chunkHeight = (size_t)sqrt(cellsPerChunk);
-
-    while (chunkWidth * chunkHeight * NB_CHUNKS < totalCells)
-    {
-        chunkWidth++;
-        chunkHeight++;
-    }
-
-    chunksPerRow = NB_COLS / chunkWidth;
+int Grid::Get(int row, int col) const
+{
+    return grid[row][col];
 }
 
 void Grid::UpdateMouseCell()
@@ -27,59 +21,49 @@ void Grid::UpdateMouseCell()
 
     if (clamp<int>(mx, VIEW_START_X, VIEW_END_X - 1) != mx || clamp<int>(my, VIEW_START_Y, VIEW_END_Y - 1) != my)
     {
-        mouseCell.SetX(-1);
-        mouseCell.SetY(-1);
+        mouseCell.SetRow(-1);
+        mouseCell.SetCol(-1);
     }
     else
     {
-        mouseCell.SetX((mx - VIEW_START_X) / CELL_WIDTH);
-        mouseCell.SetY((my - VIEW_START_Y) / CELL_WIDTH);
+        mouseCell.SetRow((mx - VIEW_START_X) / CELL_WIDTH);
+        mouseCell.SetCol((my - VIEW_START_Y) / CELL_WIDTH);
     }
 }
 
-void Grid::PlaceTile(TileType type)
+void Grid::PlaceTile(int type)
 {
-    size_t chunk{ CellToChunk(mouseCell) };
+    int& cell{ grid[mouseCell.GetRow()][mouseCell.GetCol()] };
 
-    for (Tile& tile : chunks[chunk])
-        if (mouseCell == tile)
-        {
-            if (tile.GetType() != type) // allows swapping tile types
-                tile.SetTileType(type);
-            return;
-        }
+    // short circuit to swap out the colour if a wall it already built to avoid the collision calculation
+    if (cell != -1)
+    {
+        cell = type;
+        return;
+    }
 
     if (!CircToSquareIsColliding(player.GetPos(), player.GetRadius(), mouseCell.ToVector(), CELL_WIDTH))
     {
-        chunks[chunk].push_back({ mouseCell, type }); // append a copy of the tile to the chunk's list
-        INFOLOG("New tile built at: C" << chunk << "[" << mouseCell.GetX() << ", " << mouseCell.GetY() << "]");
+        cell = type;
+        INFOLOG("New tile built at: [" << mouseCell.GetRow() << ", " << mouseCell.GetCol() << "]");
     }
 }
 
 void Grid::RemoveTile()
 {
-    size_t chunk{ CellToChunk(mouseCell) };
-    for (const Tile& tile : chunks[chunk])
-        if (mouseCell == tile)
-        {
-            // swap the tile to delete to the back of the vector to pop it
-            std::vector<Tile>& tileList{ chunks[chunk] };
-            auto iter{ std::find(tileList.begin(), tileList.end(), tile) };
-            std::iter_swap(iter, tileList.end() - 1);
-            tileList.pop_back();
+    int& cell{ grid[mouseCell.GetRow()][mouseCell.GetCol()] };
 
-            INFOLOG("Destroyed tile at: C" << chunk << "[" << mouseCell.GetX() << ", " << mouseCell.GetY() << "]");
-            break;
-        }
+    if (cell != -1)
+    {
+        cell = -1;
+        INFOLOG("Destroyed tile at: [" << mouseCell.GetRow() << ", " << mouseCell.GetCol() << "]");
+    }
 };
 
-size_t Grid::CellToChunk(const Tile& coord) const
+GridCoord Grid::VectorToCoord(const Vector2D& v) const
 {
-    return coord.GetX() / chunkWidth + coord.GetY() / chunkHeight * chunksPerRow;
-}
-
-size_t Grid::VectorToChunk(const Vector2D& vec) const
-{
-    return static_cast<int>((vec.GetX() - VIEW_START_X) / CELL_WIDTH) / chunkWidth
-        + static_cast<int>((vec.GetY() - VIEW_START_Y) / CELL_WIDTH) / chunkHeight * chunksPerRow;
+    return {
+        (static_cast<int>(v.GetX()) - VIEW_START_X) / CELL_WIDTH,
+        (static_cast<int>(v.GetY()) - VIEW_START_Y) / CELL_WIDTH
+    };
 }

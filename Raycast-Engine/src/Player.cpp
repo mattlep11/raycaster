@@ -1,4 +1,4 @@
-#include <set>
+#include <vector>
 #include "./headers/Player.h"
 
 Player::Player()
@@ -57,32 +57,20 @@ void Player::CheckCollisionStatus(const Grid& grid)
     float maxY{ y + radius };
 
     // locations to check for
-    std::vector<Vector2D> possibleChunks{};
-    possibleChunks.push_back({ minX, y });
-    possibleChunks.push_back({ maxX, y });
-    possibleChunks.push_back({ x, maxY });
-    possibleChunks.push_back({ x, minY });
+    std::vector<Vector2D> possibleLocs{};
+    possibleLocs.push_back({ minX, y });
+    possibleLocs.push_back({ maxX, y });
+    possibleLocs.push_back({ x, maxY });
+    possibleLocs.push_back({ x, minY });
 
-    std::set<size_t> checked{};
-
-    for (Vector2D loc : possibleChunks)
+    for (Vector2D loc : possibleLocs)
     {
-        size_t chunk{ grid.VectorToChunk(loc) };
-
-        // chunk doesn't exist
-        if (chunk < 0 || chunk >= NB_CHUNKS)
-            continue;
-
-        // if the chunk is unchecked, add it to the checked list and check collision of every tile
-        if (auto search{ checked.find(chunk) }; search == checked.end())
+        GridCoord coord{ grid.VectorToCoord(loc) };
+        if (grid.Get(coord.GetRow(), coord.GetCol()) != -1)
         {
-            checked.insert(chunk);
-            for (const Tile& tile : grid.GetChunks()[chunk])
-            {
-                Vector2D tileAsVector{ tile.ToVector() };
-                if (CircToSquareIsColliding(pos, radius, tile.ToVector(), CELL_WIDTH))
-                    ResolveCollision(tileAsVector);
-            }
+            Vector2D tileAsVector{ coord.ToVector() };
+            if (CircToSquareIsColliding(pos, radius, coord.ToVector(), CELL_WIDTH))
+                ResolveCollision(tileAsVector);
         }
     }
 }

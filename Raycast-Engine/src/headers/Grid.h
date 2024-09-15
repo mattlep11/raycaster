@@ -4,37 +4,32 @@
 #define RAYCAST_GRID_H
 
 #include "./Shared.h"
-#include "./Tile.h"
+#include "./GridCoord.h"
 #include "./Player.h"
 
 class Player; // forward declaration to avoid circular dependency errors
 class Grid
 {
-    Tile mouseCell{};
+    GridCoord mouseCell{};
     Player& player;
 
-    std::vector<Tile> chunks[NB_CHUNKS]{};
-    size_t chunkWidth{};
-    size_t chunkHeight{};
-    size_t chunksPerRow{};
+    int grid[NB_ROWS][NB_COLS]{};
 
 public:
     Grid(Player& player);
     ~Grid() = default;
 
+    // returns the value (wall-type) stored at the grid coordinates (row, col)
+    int Get(int row, int col) const;
     // updates which cell the mouse is currently in
     void UpdateMouseCell();
     // places a tile at the current mouse cell
-    void PlaceTile(TileType type);
+    void PlaceTile(int type);
     // removes a tile from the current mouse cell
     void RemoveTile();
-    // converts a coordinate into the corresponding integer chunk index
-    size_t CellToChunk(const Tile& coord) const;
-    // converts a vector into the corresponding integer chunk index
-    size_t VectorToChunk(const Vector2D& vec) const;
-
-    const Tile GetMouseCell() const { return this->mouseCell; }
-    const std::vector<Tile>* GetChunks() const { return this->chunks; }
+    // converts a vector of real coordinates into a set of grid coordinates
+    GridCoord VectorToCoord(const Vector2D& v) const;
+    const GridCoord GetMouseCell() const { return this->mouseCell; }
     Player& GetPlayer() { return player; } // returns player reference
 };
 
