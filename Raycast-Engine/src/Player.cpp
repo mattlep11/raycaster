@@ -57,11 +57,10 @@ void Player::CheckCollisionStatus(const Grid& grid)
     float maxY{ y + radius };
 
     // locations to check for
-    std::vector<Vector2D> possibleLocs{};
-    possibleLocs.push_back({ minX, y });
-    possibleLocs.push_back({ maxX, y });
-    possibleLocs.push_back({ x, maxY });
-    possibleLocs.push_back({ x, minY });
+    std::vector<Vector2D> possibleLocs{
+        {minX, minY}, {minX, y}, {minX, maxY}, {maxX, minY},
+        {maxX, y}, {maxX, maxY}, {x, minY}, {x, maxY}
+    };
 
     for (Vector2D loc : possibleLocs)
     {
