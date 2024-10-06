@@ -34,6 +34,8 @@ class Player
     void ResolveCollision(const Vector2D& wall);
     // updates the angles of all rays in the ray array
     void UpdateRayOrientations();
+    // performs the digital differential analyzer algorithm to extend the rays until a collision point
+    void Raycast(const Grid& grid, Ray2D& ray);
 
 public:
     Player();

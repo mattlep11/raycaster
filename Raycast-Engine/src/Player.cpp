@@ -14,6 +14,9 @@ void Player::Update(const Grid& grid, float vx, float vy, float av)
     UpdateRotation(av);
     UpdateRayOrientations();
     CheckCollisionStatus(grid);
+
+    for (Ray2D& ray : rays)
+        Raycast(grid, ray);
 }
 
 void Player::UpdateRotation(float av)
@@ -97,9 +100,77 @@ void Player::UpdateRayOrientations()
     {
         Vector2D rayDir{ ApplyRotationMatrix(start, i * da).ToNormalized() };
         rays[i].SetDir(rayDir);
-
-        // summing 100.0f as a flat rate as a temporary placeholder before the DDA calculated the full length
-        // TODO: remove 100.0f increment after DDA has been implemented
-        rays[i].SetEndPos({ pos.GetX() + 100.0f * rayDir.GetX(), pos.GetY() + 100.0f * rayDir.GetY() });
     }
+}
+
+void Player::Raycast(const Grid& grid, Ray2D& ray)
+{
+    // origin & direction variables normalized to the grid coordinates (removes the grid padding)
+    float px{ pos.GetX() - VIEW_START_X };
+    float py{ pos.GetY() - VIEW_START_Y };
+    float dirX{ ray.GetDir().GetX() };
+    float dirY{ ray.GetDir().GetY() };
+
+    // scaling factor used to represent the scale of exactly one step in the x or y direction
+    float dx{ sqrt(1 + (dirY * dirY) / (dirX * dirX)) * CELL_WIDTH };
+    float dy{ sqrt(1 + (dirX * dirX) / (dirY * dirY)) * CELL_WIDTH };
+
+    // the current cell coordinates of the ray over the course of the algorithm
+    int cellX{ static_cast<int>(px / CELL_WIDTH) };
+    int cellY{ static_cast<int>(py / CELL_WIDTH) };
+
+    // the step factor used to adjust the cell count after each iteration
+    int stepX{ (dirX < 0) ? -1 : 1 };
+    int stepY{ (dirY < 0) ? -1 : 1 };
+
+    // the cumulative distance of the ray on the x and y axes, set to the initial distance to the nearest gridline
+    float lengthX{ (dirX < 0)
+        ? px - static_cast<float>(cellX * CELL_WIDTH)
+        : static_cast<float>((cellX + 1) * CELL_WIDTH) - px
+    };
+    lengthX /= fabs(dirX);
+    float lengthY{ (dirY < 0)
+        ? py - static_cast<float>(cellY * CELL_WIDTH)
+        : static_cast<float>((cellY + 1) * CELL_WIDTH) - py
+    };
+    lengthY /= fabs(dirY);
+
+    bool collided{ false };
+    while (!collided)
+    {
+        if (lengthX < lengthY)
+        {
+            // check that bounds have not been exceeded
+            if (cellX + stepX != clamp(cellX + stepX, 0, NB_ROWS - 1))
+                collided = true;
+
+            cellX += stepX;
+
+            // check that the new cell doesn't currently have a wall within it
+            if (grid.Get(cellX, cellY) != -1)
+                collided = true;
+
+            if (!collided)
+                lengthX += dx;
+        }
+        else
+        {
+            // check that bounds have not been exceeded
+            if (cellY + stepY != clamp(cellY + stepY, 0, NB_COLS - 1))
+                collided = true;
+
+            cellY += stepY;
+
+            // check that the new cell doesn't currently have a wall within it
+            if (grid.Get(cellX, cellY) != -1)
+                collided = true;
+
+            if (!collided)
+                lengthY += dy;
+        }
+    }
+
+    float endX = px + (lengthX < lengthY ? lengthX : lengthY) * dirX + VIEW_START_X;
+    float endY = py + (lengthX < lengthY ? lengthX : lengthY) * dirY + VIEW_START_Y;
+    ray.SetEndPos({ endX, endY });
 }

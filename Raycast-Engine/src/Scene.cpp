@@ -1,7 +1,7 @@
 #include "./headers/Scene.h"
 
 // helper function to make quick convertions into raylib vectors for drawing functions
-static Vector2 AsRaylibVector(const Vector2D& v)
+static inline Vector2 AsRaylibVector(const Vector2D& v)
 {
     return { v.GetX(), v.GetY() };
 }
@@ -36,6 +36,7 @@ void Scene::Run()
 
         DrawGridLines();
         DrawGridTiles();
+        DrawPlayerViewRays(tileGrid.GetPlayer());
         DrawMouseCell();
         DrawPlayer(tileGrid.GetPlayer());
 
@@ -113,8 +114,6 @@ void Scene::DrawTileSelector() const
 
 void Scene::DrawGridLines() const
 {
-    // vertical and horizontal is done separately to premit non-square grid sizes (may cause chunk issues though TvT)
-    // horizontals
     const int endX{ VIEW_START_X + VIEW_WIDTH };
     for (int i{ 1 }; i < NB_ROWS; i++)
     {
@@ -145,7 +144,6 @@ void Scene::DrawGridTiles() const
 void Scene::DrawPlayer(const Player& player) const
 {
     DrawCircleV(AsRaylibVector(player.GetPos()), player.GetRadius(), GREEN);
-    DrawPlayerViewRays(player);
 }
 
 void Scene::DrawPlayerViewMarkers(const Player& player) const
