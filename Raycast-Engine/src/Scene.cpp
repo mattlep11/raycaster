@@ -62,9 +62,9 @@ void Scene::DrawSceneDetails() const
     DrawFPS(MENU_START_X + MENU_WIDTH - fpsSize - VIEW_START_X, VIEW_START_Y);
 
     DrawText("Controls: WASD to move | L/R arrow keys to rotate | Q/E to cycle tile types | M1/M2 to place or remove tiles | Z to toggle view markers | SWAP button for 3D POV",
-        VIEW_START_X, VIEW_START_Y / 2, 10, LIGHTGRAY);
+        VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY);
 
-    DrawRectangleLinesEx(VIEWPORT, 2, WHITE);
+    DrawRectangleLinesEx(VIEWPORT, 4, WHITE);
     DrawSwapButton();
     DrawTileSelector();
 }
@@ -83,6 +83,15 @@ void Scene::DrawSwapButton() const
         SWAP_BTN_MID_Y - (int)(swapTxtSize.y * 0.5f),
         30, WHITE
     );
+
+    // swap the cursor for feedback
+    int mx{ GetMouseX() };
+    int my{ GetMouseY() };
+    if (clamp<int>(mx, SWAP_BTN_START_X, SWAP_BTN_START_X + SWAP_BTN_WIDTH) == mx
+        && clamp<int>(my, SWAP_BTN_START_Y, SWAP_BTN_START_Y + SWAP_BTN_HEIGHT) == my)
+        SetMouseCursor(MOUSE_CURSOR_POINTING_HAND);
+    else
+        SetMouseCursor(MOUSE_CURSOR_DEFAULT);
 }
 
 void Scene::DrawTileSelector() const

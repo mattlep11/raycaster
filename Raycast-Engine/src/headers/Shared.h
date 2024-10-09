@@ -33,7 +33,7 @@ constexpr int VIEW_HEIGHT{ VIEW_WIDTH };
 constexpr int VIEW_END_X{ VIEW_WIDTH + VIEW_START_X };
 constexpr int VIEW_END_Y{ VIEW_HEIGHT + VIEW_START_Y };
 
-constexpr Rectangle VIEWPORT{ VIEW_START_X, VIEW_START_Y, VIEW_WIDTH, VIEW_HEIGHT };
+constexpr Rectangle VIEWPORT{ VIEW_START_X - 4, VIEW_START_Y - 4, VIEW_WIDTH + 8, VIEW_HEIGHT + 8 };
 constexpr int MENU_START_X{ VIEW_START_X * 2 + VIEW_WIDTH };
 
 // map config
@@ -45,7 +45,7 @@ constexpr int NB_COLS{ VIEW_WIDTH / CELL_WIDTH };
 // player config
 constexpr float PLR_SPEED{ 3.5f };
 constexpr float PLR_R_SPEED{ 0.1f };
-constexpr size_t NB_RAYS{ 100 }; // MINIMUM = 2
+constexpr size_t NB_RAYS{ 1000 }; // MINIMUM = 2
 constexpr float DIR_VEC_LENGTH{ 50.0f };
 constexpr float VIEW_VEC_LENGTH{ DIR_VEC_LENGTH };
 
