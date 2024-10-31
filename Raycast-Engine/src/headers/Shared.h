@@ -42,10 +42,18 @@ constexpr int CELL_WIDTH_IN_GRID{ CELL_WIDTH - 1 };
 constexpr int NB_ROWS{ VIEW_HEIGHT / CELL_WIDTH };
 constexpr int NB_COLS{ VIEW_WIDTH / CELL_WIDTH };
 
+// ui config
+constexpr int MENU_WIDTH{ WIN_WIDTH - 3 * VIEW_START_X - VIEW_WIDTH };
+constexpr int MENU_HEIGHT{ VIEW_HEIGHT };
+constexpr int SWAP_BTN_WIDTH{ MENU_WIDTH };
+constexpr int SWAP_BTN_HEIGHT{ 100 };
+constexpr int SWAP_BTN_START_X{ MENU_START_X };
+constexpr int SWAP_BTN_START_Y{ VIEW_END_Y - SWAP_BTN_HEIGHT };
+
 // player config
 constexpr float PLR_SPEED{ 3.5f };
-constexpr float PLR_R_SPEED{ 0.1f };
-constexpr size_t NB_RAYS{ 1000 }; // MINIMUM = 2
+constexpr float PLR_R_SPEED{ 0.07f };
+constexpr size_t NB_RAYS{ VIEW_WIDTH }; // MINIMUM = 2
 constexpr float DIR_VEC_LENGTH{ 50.0f };
 constexpr float VIEW_VEC_LENGTH{ DIR_VEC_LENGTH };
 

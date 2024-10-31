@@ -16,20 +16,24 @@ class Controller
 
     // states
     bool renderViewMarkers{ false };
+    bool render3D{ false };
 
 public:
     Controller() = default;
     ~Controller() = default;
 
     // listens for clicks and delegates the click event to the relevant component
-    void HandleClickEvents(Grid& tileGrid) const;
+    void HandleClickEvents(Grid& tileGrid);
     // listens for key presses and delegates the key event to the relevant component
-    void HandleKeyEvents(const Grid& tileGrid, Player& player);
+    void HandleKeyEvents();
+    // listens for movement key presses and uses them to update the connected player's position
+    void HandleMovementEvents(const Grid& tileGrid, Player& player) const;
 
     Color GetColour(int type) const { return this->colours[type]; }
     int GetSelectedTile() const { return this->selectedTileColour; }
 
     bool ShouldRenderViewMarkers() const { return this->renderViewMarkers; }
+    bool ShouldRender3D() const { return this->render3D; }
 };
 
 #endif

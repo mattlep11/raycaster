@@ -7,13 +7,7 @@ static inline Vector2 AsRaylibVector(const Vector2D& v)
 }
 
 // constants for rendering the scene elements:
-constexpr int MENU_WIDTH{ WIN_WIDTH - 3 * VIEW_START_X - VIEW_WIDTH };
-constexpr int MENU_HEIGHT{ VIEW_HEIGHT };
 /* SWAP BUTTON */
-constexpr int SWAP_BTN_WIDTH{ MENU_WIDTH };
-constexpr int SWAP_BTN_HEIGHT{ 100 };
-constexpr int SWAP_BTN_START_X{ MENU_START_X };
-constexpr int SWAP_BTN_START_Y{ VIEW_END_Y - SWAP_BTN_HEIGHT };
 constexpr int SWAP_BTN_MID_X{ SWAP_BTN_START_X + SWAP_BTN_WIDTH / 2 };
 constexpr int SWAP_BTN_MID_Y{ SWAP_BTN_START_Y + SWAP_BTN_HEIGHT / 2 };
 /* TILE SELECTOR */
@@ -34,14 +28,17 @@ void Scene::Run()
 
         ClearBackground(BLACK);
 
-        DrawGridLines();
-        DrawGridTiles();
-        DrawPlayerViewRays(tileGrid.GetPlayer());
-        DrawMouseCell();
-        DrawPlayer(tileGrid.GetPlayer());
+        if (!app.ShouldRender3D())
+        {
+            DrawGridLines();
+            DrawGridTiles();
+            DrawPlayerViewRays(tileGrid.GetPlayer());
+            DrawMouseCell();
+            DrawPlayer(tileGrid.GetPlayer());
 
-        if (app.ShouldRenderViewMarkers())
-            DrawPlayerViewMarkers(tileGrid.GetPlayer());
+            if (app.ShouldRenderViewMarkers())
+                DrawPlayerViewMarkers(tileGrid.GetPlayer());
+        }
 
         DrawSceneDetails();
 
@@ -51,9 +48,16 @@ void Scene::Run()
 
 void Scene::PollUpdates()
 {
-    tileGrid.UpdateMouseCell();
     app.HandleClickEvents(tileGrid);
-    app.HandleKeyEvents(tileGrid, tileGrid.GetPlayer());
+
+    if (!app.ShouldRender3D())
+    {
+        tileGrid.UpdateMouseCell();
+        app.HandleKeyEvents();
+    }
+
+    app.HandleMovementEvents(tileGrid, tileGrid.GetPlayer());
+
 }
 
 void Scene::DrawSceneDetails() const
@@ -61,8 +65,11 @@ void Scene::DrawSceneDetails() const
     const int fpsSize{ MeasureText("XX FPS", 10) };
     DrawFPS(MENU_START_X + MENU_WIDTH - fpsSize - VIEW_START_X, VIEW_START_Y);
 
-    DrawText("[CONTROLS] - WS: move | AD: strafe | L/R arrow keys: rotate | Q/E: cycle tile types | M1/M2: place or remove tiles | Z: toggle view markers | SWAP: Switch to 3D POV",
-        VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY);
+    (app.ShouldRender3D())
+        ? DrawText("[CONTROLS] - WS: move | AD: strafe | L/R arrow keys: rotate | SWAP: Switch to 2D POV",
+            VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY)
+        : DrawText("[CONTROLS] - WS: move | AD: strafe | L/R arrow keys: rotate | Q/E: cycle tile types | M1/M2: place or remove tiles | Z: toggle view markers | SWAP: Switch to 3D POV",
+            VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY);
 
     DrawRectangleLinesEx(VIEWPORT, 4, WHITE);
     DrawSwapButton();
