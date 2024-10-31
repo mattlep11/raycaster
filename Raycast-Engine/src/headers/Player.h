@@ -25,7 +25,7 @@ class Player
     Vector2D dirPoint{ pos - Vector2D(0.0f, dirLength) }; // middle-most point of the view plane, end of direction vec.
 
     // updates the position of the player based on current user inputs
-    void UpdatePosition(float vx, float vy);
+    void UpdatePosition(float v, float strafe, float av);
     // updates the rotation of the player based on current user inputs
     void UpdateRotation(float av);
     // checks to see if the player is currently overlapping any grid tiles
@@ -41,7 +41,7 @@ public:
     Player();
     ~Player() = default;
     // updates the player with new user input
-    void Update(const Grid& grid, float vx, float vy, float av);
+    void Update(const Grid& grid, float v, float strafe, float av);
 
     const Vector2D GetPos() const { return this->pos; }
     const Vector2D GetDir() const { return this->dir; }

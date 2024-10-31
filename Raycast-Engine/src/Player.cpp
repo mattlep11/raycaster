@@ -8,9 +8,9 @@ Player::Player()
         rays[i] = { {0.0f, 0.0f}, {0.0f, 0.0f} };
 }
 
-void Player::Update(const Grid& grid, float vx, float vy, float av)
+void Player::Update(const Grid& grid, float v, float strafe, float av)
 {
-    UpdatePosition(vx, vy);
+    UpdatePosition(v, strafe, av);
     UpdateRotation(av);
     UpdateRayOrientations();
     CheckCollisionStatus(grid);
@@ -41,8 +41,13 @@ void Player::UpdateRotation(float av)
     viewPointR = { dirX - dx, dirY - dy };
 }
 
-void Player::UpdatePosition(float vx, float vy)
+void Player::UpdatePosition(float v, float strafe, float av)
 {
+    Vector2D perpDir{ dir.ToPerpindicular() };
+    float vx{ v * dir.GetX() + strafe * perpDir.GetX() };
+    float vy{ v * dir.GetY() + strafe * perpDir.GetY() };
+
+
     pos.SetX(clamp<float>(pos.GetX() + vx, VIEW_START_X + radius, VIEW_END_X - radius));
     pos.SetY(clamp<float>(pos.GetY() + vy, VIEW_START_Y + radius, VIEW_END_Y - radius));
 }

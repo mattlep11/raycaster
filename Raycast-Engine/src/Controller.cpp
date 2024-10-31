@@ -33,21 +33,21 @@ void Controller::HandleKeyEvents(const Grid& tileGrid, Player& player)
         renderViewMarkers = !renderViewMarkers;
 
     // comptuting final velocities per update to update the player with
-    float vx{};
-    float vy{};
+    float v{};
+    float vStrafe{};
     float av{};
     if (IsKeyDown(KEY_W))
-        vy -= PLR_SPEED;
+        v += PLR_SPEED;
     if (IsKeyDown(KEY_S))
-        vy += PLR_SPEED;
+        v -= PLR_SPEED;
     if (IsKeyDown(KEY_A))
-        vx -= PLR_SPEED;
+        vStrafe -= PLR_SPEED;
     if (IsKeyDown(KEY_D))
-        vx += PLR_SPEED;
+        vStrafe += PLR_SPEED;
     if (IsKeyDown(KEY_RIGHT))
         av += PLR_R_SPEED;
     if (IsKeyDown(KEY_LEFT))
         av -= PLR_R_SPEED;
 
-    player.Update(tileGrid, vx, vy, av);
+    player.Update(tileGrid, v, vStrafe, av);
 }
