@@ -55,20 +55,28 @@ void Controller::HandleMovementEvents(const Grid& tileGrid, Player& player) cons
 {
     // comptuting final velocities per update to update the player with
     float v{};
-    float vStrafe{};
+    float vAlt{};
     float av{};
+
     if (IsKeyDown(KEY_W))
         v += PLR_SPEED;
     if (IsKeyDown(KEY_S))
         v -= PLR_SPEED;
+
+    // flip vertical velocity for 2D pov to maintain cardinal movement
+    if (!render3D)
+        v = -v;
+
     if (IsKeyDown(KEY_A))
-        vStrafe -= PLR_SPEED;
+        vAlt -= PLR_SPEED;
     if (IsKeyDown(KEY_D))
-        vStrafe += PLR_SPEED;
+        vAlt += PLR_SPEED;
+
+    // player rotation
     if (IsKeyDown(KEY_RIGHT))
         av += PLR_R_SPEED;
     if (IsKeyDown(KEY_LEFT))
         av -= PLR_R_SPEED;
 
-    player.Update(tileGrid, v, vStrafe, av, render3D);
+    player.Update(tileGrid, v, vAlt, av, render3D);
 }

@@ -71,7 +71,7 @@ void Scene::DrawSceneDetails() const
     (app.ShouldRender3D())
         ? DrawText("[CONTROLS] - WS: move | AD: strafe | L/R arrow keys: rotate | SWAP: Switch to 2D POV",
             VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY)
-        : DrawText("[CONTROLS] - WS: move | AD: strafe | L/R arrow keys: rotate | Q/E: cycle tile types | M1/M2: place or remove tiles | Z: toggle view markers | SWAP: Switch to 3D POV",
+        : DrawText("[CONTROLS] - WASD: move | L/R arrow keys: rotate | Q/E: cycle through tile types | M1/M2: place or remove tiles | Z: toggle view markers | SWAP: Switch to 3D POV",
             VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY);
 
     DrawRectangleLinesEx(VIEWPORT, 4, WHITE);
