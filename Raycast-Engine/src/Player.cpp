@@ -8,7 +8,7 @@ Player::Player()
         rays[i] = { {0.0f, 0.0f}, {0.0f, 0.0f} };
 }
 
-void Player::Update(const Grid& grid, float v, float strafe, float av)
+void Player::Update(const Grid& grid, float v, float strafe, float av, bool in3D)
 {
     UpdatePosition(v, strafe);
     UpdateRotation(av);
@@ -16,7 +16,7 @@ void Player::Update(const Grid& grid, float v, float strafe, float av)
     CheckCollisionStatus(grid);
 
     for (Ray2D& ray : rays)
-        Raycast(grid, ray);
+        Raycast(grid, ray, in3D);
 }
 
 void Player::UpdateRotation(float av)
@@ -107,7 +107,7 @@ void Player::UpdateRayOrientations()
     }
 }
 
-void Player::Raycast(const Grid& grid, Ray2D& ray)
+void Player::Raycast(const Grid& grid, Ray2D& ray, bool in3D)
 {
     // origin & direction variables normalized to the grid coordinates (removes the grid padding)
     float px{ pos.GetX() - VIEW_START_X };
@@ -140,41 +140,60 @@ void Player::Raycast(const Grid& grid, Ray2D& ray)
     lengthY /= fabs(dirY);
 
     bool collided{ false };
+    bool collidedNS{ false };
     while (!collided)
     {
         if (lengthX < lengthY)
         {
-            // check that bounds have not been exceeded
-            if (cellX + stepX != clamp(cellX + stepX, 0, NB_ROWS - 1))
-                collided = true;
-
             cellX += stepX;
+            collidedNS = false;
 
-            // check that the new cell doesn't currently have a wall within it
-            if (grid.Get(cellX, cellY) != -1)
+            // check that bounds have not been exceeded or tiles have not been collided with
+            if (cellX != clamp(cellX, 0, NB_ROWS - 1) || grid.Get(cellX, cellY) != -1)
                 collided = true;
 
-            if (!collided)
-                lengthX += dx;
+            lengthX += dx;
         }
         else
         {
-            // check that bounds have not been exceeded
-            if (cellY + stepY != clamp(cellY + stepY, 0, NB_COLS - 1))
-                collided = true;
-
             cellY += stepY;
+            collidedNS = true;
 
-            // check that the new cell doesn't currently have a wall within it
-            if (grid.Get(cellX, cellY) != -1)
+            // check that bounds have not been exceeded or tiles have not been collided with
+            if (cellY != clamp(cellY, 0, NB_COLS - 1) || grid.Get(cellX, cellY) != -1)
                 collided = true;
 
-            if (!collided)
-                lengthY += dy;
+            lengthY += dy;
         }
     }
 
-    float endX = px + (lengthX < lengthY ? lengthX : lengthY) * dirX + VIEW_START_X;
-    float endY = py + (lengthX < lengthY ? lengthX : lengthY) * dirY + VIEW_START_Y;
-    ray.SetEndPos({ endX, endY });
+    // step back in one direction (since DDA goes one step passed collision)
+    float shortestLength{ (collidedNS) ? lengthY - dy : lengthX - dx };
+
+    if (in3D)
+    {
+        int lineHeight{ static_cast<int>(VIEW_HEIGHT * CELL_WIDTH / shortestLength) };
+
+        int wallStart{ VIEW_HEIGHT / 2 - lineHeight / 2 };
+        if (wallStart <= 0)
+            wallStart = VIEW_START_Y;
+        int wallEnd{ VIEW_HEIGHT / 2 + lineHeight / 2 };
+        if (wallEnd >= VIEW_HEIGHT)
+            wallEnd = VIEW_HEIGHT - 1;
+
+        ray.SetWallStart3D(wallStart);
+        ray.SetWallEnd3D(wallEnd);
+        ray.SetCollidedNS(collidedNS);
+        ray.SetCollidedWallType(grid.Get(cellX, cellY));
+
+        if (IsKeyPressed(KEY_R))
+            INFOLOG(grid.Get(cellX, cellY));
+    }
+    else
+    {
+        float endX = px + shortestLength * dirX + VIEW_START_X;
+        float endY = py + shortestLength * dirY + VIEW_START_Y;
+        ray.SetEndPos({ endX, endY });
+    }
+
 }

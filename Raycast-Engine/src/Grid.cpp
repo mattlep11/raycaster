@@ -11,6 +11,9 @@ Grid::Grid(Player& player)
 
 int Grid::Get(int row, int col) const
 {
+    if (row != clamp<int>(row, 0, NB_ROWS - 1) || col != clamp<int>(col, 0, NB_COLS - 1))
+        return -1;
+
     return grid[row][col];
 }
 

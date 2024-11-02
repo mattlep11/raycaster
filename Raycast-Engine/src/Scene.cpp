@@ -19,6 +19,7 @@ void Scene::Run()
 {
     SetTargetFPS(TARGET_FPS);
     InitWindow(WIN_WIDTH, WIN_HEIGHT, "RAYCASTER ENGINE o7");
+    Player& plr{ tileGrid.GetPlayer() };
 
     while (!WindowShouldClose())
     {
@@ -31,14 +32,16 @@ void Scene::Run()
         if (!app.ShouldRender3D())
         {
             DrawGridLines();
+            DrawPlayerViewRays(plr);
             DrawGridTiles();
-            DrawPlayerViewRays(tileGrid.GetPlayer());
             DrawMouseCell();
-            DrawPlayer(tileGrid.GetPlayer());
+            DrawPlayer(plr);
 
             if (app.ShouldRenderViewMarkers())
-                DrawPlayerViewMarkers(tileGrid.GetPlayer());
+                DrawPlayerViewMarkers(plr);
         }
+        else
+            Draw3DWalls(plr);
 
         DrawSceneDetails();
 
@@ -103,7 +106,7 @@ void Scene::DrawSwapButton() const
 
 void Scene::DrawTileSelector() const
 {
-    Color rectColour{ app.GetColour(app.GetSelectedTile()) };
+    Color rectColour{ app.GetColour(app.GetSelectedTile(), false) };
     const Vector2 qLeftSize{ MeasureTextEx(GetFontDefault(), "< Q", 30, 1.0f) };
     const Vector2 eRightSize{ MeasureTextEx(GetFontDefault(), "E >", 30, 1.0f) };
     const int headerSize{ MeasureText("Selected Tile:", 30) };
@@ -153,7 +156,7 @@ void Scene::DrawGridTiles() const
             if (tileGrid.Get(i, j) != -1)
                 DrawRectangle(
                     VIEW_START_X + i * CELL_WIDTH, VIEW_START_Y + j * CELL_WIDTH,
-                    CELL_WIDTH_IN_GRID, CELL_WIDTH_IN_GRID, app.GetColour(tileGrid.Get(i, j))
+                    CELL_WIDTH_IN_GRID, CELL_WIDTH_IN_GRID, app.GetColour(tileGrid.Get(i, j), false)
                 );
 }
 
@@ -182,6 +185,21 @@ void Scene::DrawPlayerViewRays(const Player& player) const
     const Ray2D* rays{ player.GetRays() };
     for (size_t i{}; i < NB_RAYS; i++)
         DrawLineEx(start, AsRaylibVector(rays[i].GetEndPos()), 2.0f, RED);
+}
+
+void Scene::Draw3DWalls(const Player& player) const
+{
+    const Ray2D* rays{ player.GetRays() };
+    int pixel{ VIEW_START_X };
+    Ray2D currentRay{};
+    for (int i{}; i < NB_RAYS; i++)
+    {
+        pixel++;
+        currentRay = rays[i];
+
+        DrawLine(pixel, currentRay.GetWallStart3D(), pixel, currentRay.GetWallEnd3D(),
+            app.GetColour(currentRay.GetCollidedWallType(), currentRay.HasCollidedNS()));
+    }
 }
 
 void Scene::DrawMouseCell() const

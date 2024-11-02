@@ -9,8 +9,8 @@
 class Controller
 {
     // array of possible colours which will be injected into the grid cells to denote what they should be painted
-    static constexpr int NB_COLOURS{ 3 };
-    static constexpr Color colours[NB_COLOURS]{ DARKBLUE, DARKGREEN, DARKPURPLE };
+    static constexpr int NB_UNIQUE_TILES{ 3 };
+    static constexpr Color colours[]{ DARKBLUE, DARKGREEN, DARKPURPLE, BLUE, GREEN, PURPLE, GRAY, LIGHTGRAY };
 
     int selectedTileColour{};
 
@@ -29,7 +29,8 @@ public:
     // listens for movement key presses and uses them to update the connected player's position
     void HandleMovementEvents(const Grid& tileGrid, Player& player) const;
 
-    Color GetColour(int type) const { return this->colours[type]; }
+    // returns the requested colours, alt flag can be used to get a lighter alternate version
+    Color GetColour(int type, bool alt) const;
     int GetSelectedTile() const { return this->selectedTileColour; }
 
     bool ShouldRenderViewMarkers() const { return this->renderViewMarkers; }

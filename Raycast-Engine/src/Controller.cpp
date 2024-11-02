@@ -1,5 +1,13 @@
 #include "./headers/Controller.h"
 
+Color Controller::GetColour(int type, bool alt) const
+{
+    if (type < 0 || type >= NB_UNIQUE_TILES)
+        return (alt) ? colours[NB_UNIQUE_TILES * 2 + 1] : colours[NB_UNIQUE_TILES * 2];
+    else
+        return (alt) ? colours[type + NB_UNIQUE_TILES] : colours[type];
+}
+
 void Controller::HandleClickEvents(Grid& tileGrid)
 {
     int mx{ GetMouseX() };
@@ -34,9 +42,9 @@ void Controller::HandleKeyEvents()
 {
     // cycle through the tile types in forward/reverse direction
     if (IsKeyPressed(KEY_E))
-        selectedTileColour = ++selectedTileColour % NB_COLOURS;
+        selectedTileColour = ++selectedTileColour % NB_UNIQUE_TILES;
     else if (IsKeyPressed(KEY_Q))
-        selectedTileColour = (--selectedTileColour + NB_COLOURS) % NB_COLOURS;
+        selectedTileColour = (--selectedTileColour + NB_UNIQUE_TILES) % NB_UNIQUE_TILES;
 
     // key modifiable states
     if (IsKeyPressed(KEY_Z))
@@ -62,5 +70,5 @@ void Controller::HandleMovementEvents(const Grid& tileGrid, Player& player) cons
     if (IsKeyDown(KEY_LEFT))
         av -= PLR_R_SPEED;
 
-    player.Update(tileGrid, v, vStrafe, av);
+    player.Update(tileGrid, v, vStrafe, av, render3D);
 }

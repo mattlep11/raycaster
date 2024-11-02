@@ -35,13 +35,13 @@ class Player
     // updates the angles of all rays in the ray array
     void UpdateRayOrientations();
     // performs the digital differential analyzer algorithm to extend the rays until a collision point
-    void Raycast(const Grid& grid, Ray2D& ray);
+    void Raycast(const Grid& grid, Ray2D& ray, bool in3D);
 
 public:
     Player();
     ~Player() = default;
     // updates the player with new user input
-    void Update(const Grid& grid, float v, float strafe, float av);
+    void Update(const Grid& grid, float v, float strafe, float av, bool in3D);
 
     const Vector2D GetPos() const { return this->pos; }
     const Vector2D GetDir() const { return this->dir; }
