@@ -7,13 +7,7 @@ static inline Vector2 AsRaylibVector(const Vector2D& v)
 }
 
 // constants for rendering the scene elements:
-constexpr int MENU_WIDTH{ WIN_WIDTH - 3 * VIEW_START_X - VIEW_WIDTH };
-constexpr int MENU_HEIGHT{ VIEW_HEIGHT };
 /* SWAP BUTTON */
-constexpr int SWAP_BTN_WIDTH{ MENU_WIDTH };
-constexpr int SWAP_BTN_HEIGHT{ 100 };
-constexpr int SWAP_BTN_START_X{ MENU_START_X };
-constexpr int SWAP_BTN_START_Y{ VIEW_END_Y - SWAP_BTN_HEIGHT };
 constexpr int SWAP_BTN_MID_X{ SWAP_BTN_START_X + SWAP_BTN_WIDTH / 2 };
 constexpr int SWAP_BTN_MID_Y{ SWAP_BTN_START_Y + SWAP_BTN_HEIGHT / 2 };
 /* TILE SELECTOR */
@@ -25,6 +19,7 @@ void Scene::Run()
 {
     SetTargetFPS(TARGET_FPS);
     InitWindow(WIN_WIDTH, WIN_HEIGHT, "RAYCASTER ENGINE o7");
+    Player& plr{ tileGrid.GetPlayer() };
 
     while (!WindowShouldClose())
     {
@@ -34,14 +29,19 @@ void Scene::Run()
 
         ClearBackground(BLACK);
 
-        DrawGridLines();
-        DrawGridTiles();
-        DrawPlayerViewRays(tileGrid.GetPlayer());
-        DrawMouseCell();
-        DrawPlayer(tileGrid.GetPlayer());
+        if (!app.ShouldRender3D())
+        {
+            DrawGridLines();
+            DrawPlayerViewRays(plr);
+            DrawGridTiles();
+            DrawMouseCell();
+            DrawPlayer(plr);
 
-        if (app.ShouldRenderViewMarkers())
-            DrawPlayerViewMarkers(tileGrid.GetPlayer());
+            if (app.ShouldRenderViewMarkers())
+                DrawPlayerViewMarkers(plr);
+        }
+        else
+            Draw3DWalls(plr);
 
         DrawSceneDetails();
 
@@ -51,9 +51,16 @@ void Scene::Run()
 
 void Scene::PollUpdates()
 {
-    tileGrid.UpdateMouseCell();
     app.HandleClickEvents(tileGrid);
-    app.HandleKeyEvents(tileGrid, tileGrid.GetPlayer());
+
+    if (!app.ShouldRender3D())
+    {
+        tileGrid.UpdateMouseCell();
+        app.HandleKeyEvents();
+    }
+
+    app.HandleMovementEvents(tileGrid, tileGrid.GetPlayer());
+
 }
 
 void Scene::DrawSceneDetails() const
@@ -61,8 +68,11 @@ void Scene::DrawSceneDetails() const
     const int fpsSize{ MeasureText("XX FPS", 10) };
     DrawFPS(MENU_START_X + MENU_WIDTH - fpsSize - VIEW_START_X, VIEW_START_Y);
 
-    DrawText("Controls: WASD to move | L/R arrow keys to rotate | Q/E to cycle tile types | M1/M2 to place or remove tiles | Z to toggle view markers | SWAP button for 3D POV",
-        VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY);
+    (app.ShouldRender3D())
+        ? DrawText("[CONTROLS] - WS: move | AD: strafe | L/R arrow keys: rotate | SWAP: Switch to 2D POV",
+            VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY)
+        : DrawText("[CONTROLS] - WASD: move | L/R arrow keys: rotate | Q/E: cycle through tile types | M1/M2: place or remove tiles | Z: toggle view markers | SWAP: Switch to 3D POV",
+            VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY);
 
     DrawRectangleLinesEx(VIEWPORT, 4, WHITE);
     DrawSwapButton();
@@ -96,7 +106,7 @@ void Scene::DrawSwapButton() const
 
 void Scene::DrawTileSelector() const
 {
-    Color rectColour{ app.GetColour(app.GetSelectedTile()) };
+    Color rectColour{ app.GetColour(app.GetSelectedTile(), false) };
     const Vector2 qLeftSize{ MeasureTextEx(GetFontDefault(), "< Q", 30, 1.0f) };
     const Vector2 eRightSize{ MeasureTextEx(GetFontDefault(), "E >", 30, 1.0f) };
     const int headerSize{ MeasureText("Selected Tile:", 30) };
@@ -146,7 +156,7 @@ void Scene::DrawGridTiles() const
             if (tileGrid.Get(i, j) != -1)
                 DrawRectangle(
                     VIEW_START_X + i * CELL_WIDTH, VIEW_START_Y + j * CELL_WIDTH,
-                    CELL_WIDTH_IN_GRID, CELL_WIDTH_IN_GRID, app.GetColour(tileGrid.Get(i, j))
+                    CELL_WIDTH_IN_GRID, CELL_WIDTH_IN_GRID, app.GetColour(tileGrid.Get(i, j), false)
                 );
 }
 
@@ -175,6 +185,21 @@ void Scene::DrawPlayerViewRays(const Player& player) const
     const Ray2D* rays{ player.GetRays() };
     for (size_t i{}; i < NB_RAYS; i++)
         DrawLineEx(start, AsRaylibVector(rays[i].GetEndPos()), 2.0f, RED);
+}
+
+void Scene::Draw3DWalls(const Player& player) const
+{
+    const Ray2D* rays{ player.GetRays() };
+    int pixel{ VIEW_START_X };
+    Ray2D currentRay{};
+    for (int i{}; i < NB_RAYS; i++)
+    {
+        pixel++;
+        currentRay = rays[i];
+
+        DrawLine(pixel, currentRay.GetWallStart3D(), pixel, currentRay.GetWallEnd3D(),
+            app.GetColour(currentRay.GetCollidedWallType(), currentRay.HasCollidedNS()));
+    }
 }
 
 void Scene::DrawMouseCell() const

@@ -8,15 +8,15 @@ Player::Player()
         rays[i] = { {0.0f, 0.0f}, {0.0f, 0.0f} };
 }
 
-void Player::Update(const Grid& grid, float vx, float vy, float av)
+void Player::Update(const Grid& grid, float v, float vAlt, float av, bool in3D)
 {
-    UpdatePosition(vx, vy);
+    UpdatePosition(v, vAlt, in3D);
     UpdateRotation(av);
     UpdateRayOrientations();
     CheckCollisionStatus(grid);
 
     for (Ray2D& ray : rays)
-        Raycast(grid, ray);
+        Raycast(grid, ray, in3D);
 }
 
 void Player::UpdateRotation(float av)
@@ -41,8 +41,25 @@ void Player::UpdateRotation(float av)
     viewPointR = { dirX - dx, dirY - dy };
 }
 
-void Player::UpdatePosition(float vx, float vy)
+void Player::UpdatePosition(float v, float vAlt, bool strafe)
 {
+    float vx{};
+    float vy{};
+
+    // strafe movement for 3D
+    if (strafe)
+    {
+        Vector2D perpDir{ dir.ToPerpindicular() };
+        vx = v * dir.GetX() + vAlt * perpDir.GetX();
+        vy = v * dir.GetY() + vAlt * perpDir.GetY();
+    }
+    // cardinal movement for 2D
+    else
+    {
+        vx = vAlt;
+        vy = v;
+    }
+
     pos.SetX(clamp<float>(pos.GetX() + vx, VIEW_START_X + radius, VIEW_END_X - radius));
     pos.SetY(clamp<float>(pos.GetY() + vy, VIEW_START_Y + radius, VIEW_END_Y - radius));
 }
@@ -94,16 +111,21 @@ void Player::ResolveCollision(const Vector2D& wall)
 
 void Player::UpdateRayOrientations()
 {
-    float da{ fov / (NB_RAYS - 1) };
-    Vector2D start{ viewPointR - pos };
+    Vector2D perp{ dir.ToPerpindicular() };
+    float perpX{ perp.GetX() };
+    float perpY{ perp.GetY() };
     for (size_t i{}; i < NB_RAYS; i++)
     {
-        Vector2D rayDir{ ApplyRotationMatrix(start, i * da).ToNormalized() };
-        rays[i].SetDir(rayDir);
+        // interpolates the angle across the x axis
+        float camX{ 2 * i / static_cast<float>(VIEW_WIDTH) - 1 };
+        float dirX{ dir.GetX() + perpX * camX };
+        float dirY{ dir.GetY() + perpY * camX };
+
+        rays[i].SetDir(Vector2D(dirX, dirY).ToNormalized());
     }
 }
 
-void Player::Raycast(const Grid& grid, Ray2D& ray)
+void Player::Raycast(const Grid& grid, Ray2D& ray, bool in3D)
 {
     // origin & direction variables normalized to the grid coordinates (removes the grid padding)
     float px{ pos.GetX() - VIEW_START_X };
@@ -136,41 +158,60 @@ void Player::Raycast(const Grid& grid, Ray2D& ray)
     lengthY /= fabs(dirY);
 
     bool collided{ false };
+    bool collidedNS{ false };
     while (!collided)
     {
         if (lengthX < lengthY)
         {
-            // check that bounds have not been exceeded
-            if (cellX + stepX != clamp(cellX + stepX, 0, NB_ROWS - 1))
-                collided = true;
-
             cellX += stepX;
+            collidedNS = false;
 
-            // check that the new cell doesn't currently have a wall within it
-            if (grid.Get(cellX, cellY) != -1)
+            // check that bounds have not been exceeded or tiles have not been collided with
+            if (cellX != clamp(cellX, 0, NB_ROWS - 1) || grid.Get(cellX, cellY) != -1)
                 collided = true;
 
-            if (!collided)
-                lengthX += dx;
+            lengthX += dx;
         }
         else
         {
-            // check that bounds have not been exceeded
-            if (cellY + stepY != clamp(cellY + stepY, 0, NB_COLS - 1))
-                collided = true;
-
             cellY += stepY;
+            collidedNS = true;
 
-            // check that the new cell doesn't currently have a wall within it
-            if (grid.Get(cellX, cellY) != -1)
+            // check that bounds have not been exceeded or tiles have not been collided with
+            if (cellY != clamp(cellY, 0, NB_COLS - 1) || grid.Get(cellX, cellY) != -1)
                 collided = true;
 
-            if (!collided)
-                lengthY += dy;
+            lengthY += dy;
         }
     }
 
-    float endX = px + (lengthX < lengthY ? lengthX : lengthY) * dirX + VIEW_START_X;
-    float endY = py + (lengthX < lengthY ? lengthX : lengthY) * dirY + VIEW_START_Y;
-    ray.SetEndPos({ endX, endY });
+    // step back in one direction (since DDA goes one step passed collision)
+    float shortestLength{ (collidedNS) ? lengthY - dy : lengthX - dx };
+
+    if (in3D)
+    {
+        // multiple by the difference in player to ray angle to correct the fisheye effect
+        shortestLength *= cos((dir - ray.GetDir()).Magnitude());
+        int lineHeight{ static_cast<int>(CELL_WIDTH / 2 * VIEW_WIDTH / shortestLength) };
+
+        int wallStart{ VIEW_HEIGHT / 2 - lineHeight / 2 };
+        if (wallStart < 0)
+            wallStart = 0;
+        int wallEnd{ VIEW_HEIGHT / 2 + lineHeight / 2 };
+        if (wallEnd >= VIEW_HEIGHT)
+            wallEnd = VIEW_HEIGHT;
+
+        // offsetting both values by the grid padding to make it fill the full screen
+        ray.SetWallStart3D(wallStart + VIEW_START_Y);
+        ray.SetWallEnd3D(wallEnd + VIEW_START_Y);
+        ray.SetCollidedNS(collidedNS);
+        ray.SetCollidedWallType(grid.Get(cellX, cellY));
+    }
+    else
+    {
+        float endX = px + shortestLength * dirX + VIEW_START_X;
+        float endY = py + shortestLength * dirY + VIEW_START_Y;
+        ray.SetEndPos({ endX, endY });
+    }
+
 }

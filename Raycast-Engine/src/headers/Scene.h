@@ -30,6 +30,8 @@ class Scene
     void DrawPlayerViewMarkers(const Player& player) const;
     // draws the player's rays
     void DrawPlayerViewRays(const Player& player) const;
+    // draws the vertical strips that make up the 3D wall tiles
+    void Draw3DWalls(const Player& player) const;
     // draws a field around the cell the mouse is currently in
     void DrawMouseCell() const;
 
