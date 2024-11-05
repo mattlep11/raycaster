@@ -111,12 +111,17 @@ void Player::ResolveCollision(const Vector2D& wall)
 
 void Player::UpdateRayOrientations()
 {
-    float da{ fov / (NB_RAYS - 1) };
-    Vector2D start{ viewPointR - pos };
+    Vector2D perp{ dir.ToPerpindicular() };
+    float perpX{ perp.GetX() };
+    float perpY{ perp.GetY() };
     for (size_t i{}; i < NB_RAYS; i++)
     {
-        Vector2D rayDir{ ApplyRotationMatrix(start, i * da).ToNormalized() };
-        rays[i].SetDir(rayDir);
+        // interpolates the angle across the x axis
+        float camX{ 2 * i / static_cast<float>(VIEW_WIDTH) - 1 };
+        float dirX{ dir.GetX() + perpX * camX };
+        float dirY{ dir.GetY() + perpY * camX };
+
+        rays[i].SetDir(Vector2D(dirX, dirY).ToNormalized());
     }
 }
 
@@ -185,22 +190,22 @@ void Player::Raycast(const Grid& grid, Ray2D& ray, bool in3D)
 
     if (in3D)
     {
-        int lineHeight{ static_cast<int>(VIEW_HEIGHT * CELL_WIDTH / shortestLength) };
+        // multiple by the difference in player to ray angle to correct the fisheye effect
+        shortestLength *= cos((dir - ray.GetDir()).Magnitude());
+        int lineHeight{ static_cast<int>(CELL_WIDTH / 2 * VIEW_WIDTH / shortestLength) };
 
         int wallStart{ VIEW_HEIGHT / 2 - lineHeight / 2 };
-        if (wallStart <= 0)
-            wallStart = VIEW_START_Y;
+        if (wallStart < 0)
+            wallStart = 0;
         int wallEnd{ VIEW_HEIGHT / 2 + lineHeight / 2 };
         if (wallEnd >= VIEW_HEIGHT)
-            wallEnd = VIEW_HEIGHT - 1;
+            wallEnd = VIEW_HEIGHT;
 
-        ray.SetWallStart3D(wallStart);
-        ray.SetWallEnd3D(wallEnd);
+        // offsetting both values by the grid padding to make it fill the full screen
+        ray.SetWallStart3D(wallStart + VIEW_START_Y);
+        ray.SetWallEnd3D(wallEnd + VIEW_START_Y);
         ray.SetCollidedNS(collidedNS);
         ray.SetCollidedWallType(grid.Get(cellX, cellY));
-
-        if (IsKeyPressed(KEY_R))
-            INFOLOG(grid.Get(cellX, cellY));
     }
     else
     {
