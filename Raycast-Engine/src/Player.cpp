@@ -22,23 +22,6 @@ void Player::Update(const Grid& grid, float v, float vAlt, float av, bool in3D)
 void Player::UpdateRotation(float av)
 {
     dir = ApplyRotationMatrix(dir, av).ToNormalized();
-
-    // rotate the view point's frame of reference.
-    viewPointL.SetX(pos.GetX() - viewLength * 0.5f * dir.GetX());
-    viewPointL.SetY(pos.GetY() - viewLength * 0.5f * dir.GetY());
-
-    dirPoint.SetX(pos.GetX() + dirLength * dir.GetX());
-    dirPoint.SetY(pos.GetY() + dirLength * dir.GetY());
-
-    // rotate the direction vector by 90 degrees to get the perpindicular camera plane
-    Vector2D planeDir{ dir.ToPerpindicular() };
-    float dx{ viewLength * planeDir.GetX() };
-    float dy{ viewLength * planeDir.GetY() };
-    float dirX{ dirPoint.GetX() };
-    float dirY{ dirPoint.GetY() };
-
-    viewPointL = { dirX + dx, dirY + dy };
-    viewPointR = { dirX - dx, dirY - dy };
 }
 
 void Player::UpdatePosition(float v, float vAlt, bool strafe)

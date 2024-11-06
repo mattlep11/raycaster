@@ -16,14 +16,6 @@ class Player
     Vector2D dir{ 0.0f, -1.0f };
     static constexpr float radius{ CELL_WIDTH / 2.0f };
 
-    static constexpr float dirLength{ DIR_VEC_LENGTH };
-    static constexpr float viewLength{ VIEW_VEC_LENGTH };
-    float fov{ atanf(dirLength / viewLength) * 2.0f };
-
-    Vector2D viewPointL{ pos - Vector2D(viewLength * 0.5f, 0.0f) }; // the left-most point of the view plane
-    Vector2D viewPointR{ pos + Vector2D(viewLength * 0.5f, 0.0f) }; // the right-most point of the view plane
-    Vector2D dirPoint{ pos - Vector2D(0.0f, dirLength) }; // middle-most point of the view plane, end of direction vec.
-
     // updates the position of the player based on current user inputs
     void UpdatePosition(float v, float vAlt, bool strafe);
     // updates the rotation of the player based on current user inputs
@@ -45,10 +37,6 @@ public:
 
     const Vector2D GetPos() const { return this->pos; }
     const Vector2D GetDir() const { return this->dir; }
-    const float GetDirLength() const { return this->dirLength; }
-    const Vector2D GetViewPointL() const { return this->viewPointL; }
-    const Vector2D GetViewPointR() const { return this->viewPointR; }
-    const Vector2D GetDirPoint() const { return this->dirPoint; }
     const Ray2D* GetRays() const { return this->rays; }
     float GetRadius() const { return this->radius; }
 };

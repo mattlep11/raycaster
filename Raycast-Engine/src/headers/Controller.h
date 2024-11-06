@@ -15,7 +15,6 @@ class Controller
     int selectedTileColour{};
 
     // states
-    bool renderViewMarkers{ false };
     bool render3D{ false };
 
 public:
@@ -33,7 +32,6 @@ public:
     Color GetColour(int type, bool alt) const;
     int GetSelectedTile() const { return this->selectedTileColour; }
 
-    bool ShouldRenderViewMarkers() const { return this->renderViewMarkers; }
     bool ShouldRender3D() const { return this->render3D; }
 };
 

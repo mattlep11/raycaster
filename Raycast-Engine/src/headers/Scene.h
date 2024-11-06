@@ -26,8 +26,6 @@ class Scene
     void DrawGridTiles() const;
     // draws the 2D player onto the map viewport
     void DrawPlayer(const Player& player) const;
-    // draws the player's view markers denoting their direction and view cone size
-    void DrawPlayerViewMarkers(const Player& player) const;
     // draws the player's rays
     void DrawPlayerViewRays(const Player& player) const;
     // draws the vertical strips that make up the 3D wall tiles

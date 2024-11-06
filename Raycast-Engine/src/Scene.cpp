@@ -36,9 +36,6 @@ void Scene::Run()
             DrawGridTiles();
             DrawMouseCell();
             DrawPlayer(plr);
-
-            if (app.ShouldRenderViewMarkers())
-                DrawPlayerViewMarkers(plr);
         }
         else
             Draw3DWalls(plr);
@@ -71,7 +68,7 @@ void Scene::DrawSceneDetails() const
     (app.ShouldRender3D())
         ? DrawText("[CONTROLS] - WS: move | AD: strafe | L/R arrow keys: rotate | SWAP: Switch to 2D POV",
             VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY)
-        : DrawText("[CONTROLS] - WASD: move | L/R arrow keys: rotate | Q/E: cycle through tile types | M1/M2: place or remove tiles | Z: toggle view markers | SWAP: Switch to 3D POV",
+        : DrawText("[CONTROLS] - WASD: move | L/R arrow keys: rotate | Q/E: cycle through tile types | M1/M2: place or remove tiles | SWAP: Switch to 3D POV",
             VIEW_START_X, VIEW_START_Y / 3, 10, LIGHTGRAY);
 
     DrawRectangleLinesEx(VIEWPORT, 4, WHITE);
@@ -106,7 +103,6 @@ void Scene::DrawSwapButton() const
 
 void Scene::DrawTileSelector() const
 {
-    Color rectColour{ app.GetColour(app.GetSelectedTile(), false) };
     const Vector2 qLeftSize{ MeasureTextEx(GetFontDefault(), "< Q", 30, 1.0f) };
     const Vector2 eRightSize{ MeasureTextEx(GetFontDefault(), "E >", 30, 1.0f) };
     const int headerSize{ MeasureText("Selected Tile:", 30) };
@@ -118,7 +114,7 @@ void Scene::DrawTileSelector() const
     DrawRectangle(
         SELECTOR_START_X + SELECTOR_EDGE / 4, SELECTOR_START_Y + SELECTOR_EDGE / 4,
         50, 50,
-        rectColour
+        app.ShouldRender3D() ? app.GetColour(-1, false) : app.GetColour(app.GetSelectedTile(), false)
     );
     DrawText("Selected Tile:", SELECTOR_START_X + (SELECTOR_EDGE - headerSize) / 2, SELECTOR_START_Y - 50, 30, WHITE);
     DrawText("< Q",
@@ -165,20 +161,6 @@ void Scene::DrawPlayer(const Player& player) const
     DrawCircleV(AsRaylibVector(player.GetPos()), player.GetRadius(), GREEN);
 }
 
-void Scene::DrawPlayerViewMarkers(const Player& player) const
-{
-    Vector2 dirPoint{ AsRaylibVector(player.GetDirPoint()) };
-    Vector2 plrPos{ AsRaylibVector(player.GetPos()) };
-    DrawCircleV(dirPoint, 6.0f, MAGENTA);
-    DrawLineEx(plrPos, dirPoint, 3.0f, MAGENTA);
-
-    Vector2 viewPointL{ AsRaylibVector(player.GetViewPointL()) };
-    Vector2 viewPointR{ AsRaylibVector(player.GetViewPointR()) };
-    DrawCircleV(viewPointL, 6.0f, ORANGE);
-    DrawCircleV(viewPointR, 6.0f, ORANGE);
-    DrawLineEx(viewPointL, viewPointR, 3.0f, ORANGE);
-}
-
 void Scene::DrawPlayerViewRays(const Player& player) const
 {
     Vector2 start{ AsRaylibVector(player.GetPos()) };
@@ -192,7 +174,7 @@ void Scene::Draw3DWalls(const Player& player) const
     const Ray2D* rays{ player.GetRays() };
     int pixel{ VIEW_START_X };
     Ray2D currentRay{};
-    for (int i{}; i < NB_RAYS; i++)
+    for (int i{}; i < VIEW_WIDTH; i++)
     {
         pixel++;
         currentRay = rays[i];

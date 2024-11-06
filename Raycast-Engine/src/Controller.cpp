@@ -12,7 +12,7 @@ void Controller::HandleClickEvents(Grid& tileGrid)
 {
     int mx{ GetMouseX() };
     int my{ GetMouseY() };
-    if (IsMouseButtonDown(0))
+    if (!render3D && IsMouseButtonDown(0))
     {
         // mouse is in the grid
         if (clamp<int>(mx, VIEW_START_X, VIEW_END_X - 1) == mx && clamp<int>(my, VIEW_START_Y, VIEW_END_Y - 1) == my)
@@ -30,7 +30,7 @@ void Controller::HandleClickEvents(Grid& tileGrid)
         }
     }
 
-    if (IsMouseButtonDown(1))
+    if (!render3D && IsMouseButtonDown(1))
     {
         // mouse is in the grid
         if (clamp<int>(mx, VIEW_START_X, VIEW_END_X - 1) == mx && clamp<int>(my, VIEW_START_Y, VIEW_END_Y - 1) == my)
@@ -45,10 +45,6 @@ void Controller::HandleKeyEvents()
         selectedTileColour = ++selectedTileColour % NB_UNIQUE_TILES;
     else if (IsKeyPressed(KEY_Q))
         selectedTileColour = (--selectedTileColour + NB_UNIQUE_TILES) % NB_UNIQUE_TILES;
-
-    // key modifiable states
-    if (IsKeyPressed(KEY_Z))
-        renderViewMarkers = !renderViewMarkers;
 }
 
 void Controller::HandleMovementEvents(const Grid& tileGrid, Player& player) const
