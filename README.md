@@ -1,21 +1,21 @@
 # mattlep11/raycaster
-A customizable and playable 3D environment rendered using raycasting, implemented using C++ and the [Raylib](https://www.raylib.com/) drawing library.
+A customizable and playable 3D environment rendered using raycasting, implemented using C++ and the [Raylib](https://www.raylib.com/) drawing library. Utilizes the same computer graphics technique used to ship retro classics like DOOM and Wolfenstein 3D.
 
 <div align="center" style="text-align: center;">
   <h3>Build your grid...</h3>
-  Use the mouse on the grid builder to place tiles and build an environment to interact with!<br><br>
+  Use the mouse on the grid builder to place tiles and build an environment to interact with.<br><br>
   <img src="./README-assets/builder.gif" alt="Gif of a mouse clicking onto a grid and painting the picture of a smiley face.">
 </div>
 <br>
 <div align="center" style="text-align: center;">
   <h3>... watch the rays cast...</h3>
-  Use WASD to move around your new environment and watch as your view-cone adapts in real time!<br><br>
+  Use WASD to move around your new environment and watch as your view-cone adapts in real time.<br><br>
   <img style="" src="./README-assets/topdown.gif" alt="Gif of a red-cone interacting with walls as a player character moves around a grid.">
 </div>
 <br>
 <div align="center" style="text-align: center;">
   <h3>... and explore your grid in first person!</h3>
-  Swap to the first person perspective to explore what you've built!<br><br>
+  Swap to the first person perspective to move around what you've built.<br><br>
   <img src="./README-assets/firstperson.gif" alt="Gif of a first person perspective navigating through player built walls.">
 </div>
 
